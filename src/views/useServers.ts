@@ -1,9 +1,20 @@
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, Ref } from 'vue';
 import apiClient from './../apiClient';
 
+interface Storage {
+    id: string
+    name: string
+    path: string
+}
+
+interface Server {
+    name: string
+    url: string
+}
+
 export function useServers() {
-  const servers = ref([]);
-  const storages = ref([]);
+  const servers: Ref<Server[]> = ref([]);
+  const storages: Ref<Storage[]> = ref([]);
 
   async function fetchServers() {
     const token = localStorage.getItem("access_token");
@@ -16,7 +27,7 @@ export function useServers() {
     }
   }
 
-  async function fetchStorages(server) {
+  async function fetchStorages(server: Server) {
     const token = localStorage.getItem("access_token");
     const headers = { Authorization: `Bearer ${token}` };
 
