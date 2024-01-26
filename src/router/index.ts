@@ -17,11 +17,15 @@ const routes = [
   {
     path: '/login',
     component: () => import('@/views/Login.vue'),
+  },
+  {
+    path: '/storages',
+    component: () => import('@/views/Storage.vue'),
   }
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(),
   routes,
 })
 

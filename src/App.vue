@@ -1,25 +1,14 @@
 <template>
   <v-app id="inspire">
-    <v-app-bar app>
-
-      <v-app-bar-nav-icon @click="onDrawerIconClick">
-      </v-app-bar-nav-icon>
-
-      <v-toolbar-title>Application</v-toolbar-title>
-      <!-- Кнопка для входа/выхода -->
-      <v-spacer></v-spacer>
-      <!-- Этот компонент используется для добавления пространства и выравнивания элементов справа -->
-      <v-btn v-if="!isUserLoggedIn" @click="navigateToLogin">
-        Войти
-      </v-btn>
-      <v-btn v-else @click="logout">
-        Выйти
-      </v-btn>
-    </v-app-bar>
-
+    <app-bar :logged-in="isUserLoggedIn" @toggle-drawer="onDrawerIconClick" @login="navigateToLogin" @logout="logout"></app-bar>
     <v-navigation-drawer app v-model="drawer_visible">
       <v-list nav>
-        <v-list-item v-for="(item, i) in navigation_items" :key="i" :value="item" base-color="primary" :to="item.path">
+        <v-list-item
+          v-for="(item, i) in filteredNavigationItems"
+          :key="i"
+          :value="item"
+          base-color="primary"
+          :to="item.path">
           <template v-slot:prepend>
             <v-icon :icon="item.icon"></v-icon>
           </template>
@@ -38,6 +27,7 @@
 
 
 <script setup lang="ts">
+import AppBar from './components/AppBar.vue';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import mitt from 'mitt';
@@ -65,6 +55,10 @@ const isUserLoggedIn = computed(() => {
   return !!localStorage.getItem('access_token')
 })
 
+const filteredNavigationItems = computed(() => {
+  return navigation_items.filter(item => !item.requiresAuth || isUserLoggedIn.value);
+});
+
 function navigateToLogin() {
   router.push('/login')
   triggerAuthUpdate()
@@ -84,21 +78,29 @@ let navigation_items = [
     title: 'Домашняя',
     value: 'home',
     icon: "mdi-home-outline",
-    path: "/"
+    path: "/",
+    requiresAuth: false,
   },
   {
     title: 'Процессы',
     value: 'processes',
     icon: "mdi-fast-forward",
-    path: "/processes"
+    path: "/processes",
+    requiresAuth: false,
   },
   {
     title: 'Hello world!',
     value: 'hello_world',
     icon: "mdi-earth",
-    path: "/hello_world"
+    path: "/hello_world",
+    requiresAuth: false,
+  },
+  {
+    title: 'Хранилища',
+    value: 'storages',
+    icon: "mdi-database",
+    path: "/storages",
+    requiresAuth: true,
   }
 ]
-
-
 </script>
