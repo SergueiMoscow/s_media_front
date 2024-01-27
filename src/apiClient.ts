@@ -50,6 +50,20 @@ apiClient.interceptors.response.use(response => {
   }
 
   // Возвращаем ошибку, если это не 401 или после повторной неудачи
+  console.log('apiClient error', error)
+  if (error.response && error.response.data) {
+    let message = ''
+    for (const field in error.response.data) {
+      if (error.response.data[field] instanceof Array) {
+        message += `${field}: ${error.response.data[field].join(', ')}\n`
+        // alert(`${field}: ${error.response.data[field].join(', ')}`);
+      } else {
+        message += `${field}: ${error.response.data[field]}\n`
+        // alert(`${field}: ${error.response.data[field]}`);
+      }
+    }
+    alert(message)
+  }
   return Promise.reject(error);
 });
 

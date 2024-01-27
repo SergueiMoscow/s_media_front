@@ -93,6 +93,9 @@ import {
 } from "./../form_config/storage_forms";
 import { useServers } from "./useServers";
 import DynamicForm from "./../components/DynamicForm.vue";
+import apiClient from "@/apiClient";
+import { Server, Storage } from "@/types"
+import { availableParallelism } from "os";
 
 const { servers, storages, fetchStorages } = useServers();
 
@@ -102,8 +105,12 @@ const showAddStorageForm = ref(false);
 const serverForm = ref({ ...serverFormConfig, submit: addServer });
 const storageForm = ref({ ...storageFormConfig, submit: addStorage });
 
-function addServer() {
+async function addServer(formData: Server) {
   // Логика добавления сервера
+  console.log('Add server')
+  const aaa = await apiClient.post('/servers/', formData)
+  // debugger
+  // console.log('Server add response', aaa)
 }
 
 function addStorage() {

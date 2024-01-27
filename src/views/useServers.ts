@@ -1,16 +1,6 @@
 import { ref, onMounted, Ref } from 'vue';
 import apiClient from './../apiClient';
-
-interface Storage {
-    id: string
-    name: string
-    path: string
-}
-
-interface Server {
-    name: string
-    url: string
-}
+import { Server, Storage } from './../types'
 
 export function useServers() {
   const servers: Ref<Server[]> = ref([]);
