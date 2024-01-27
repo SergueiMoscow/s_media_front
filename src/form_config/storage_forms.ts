@@ -26,8 +26,8 @@ export const storageFormConfig = {
       label: 'Выберите сервер',
       input_type: "combo",
       name: 'server_id',
-      values_list: [{ value: 1, text: 'Test server 1' }, { value: 2, text: 'Test server 2' }],
-      value: 1,
+      values_list: [{ value: '1', title: 'Test server 1' }, { value: '2', title: 'Test server 2' }],
+      value: '1',
     },
     name: {
       label: "Название хранилища",
@@ -36,8 +36,8 @@ export const storageFormConfig = {
       value: '',
     },
     path: {
-      label: "Название хранилища",
-      input_type: "combo",
+      label: "Путь хранилища",
+      input_type: "text",
       name: "path",
       value: '',
     },

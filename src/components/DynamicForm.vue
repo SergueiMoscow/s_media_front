@@ -56,7 +56,11 @@
         handler(fields) {
           for (const [key, field] of Object.entries(fields)) {
             if (field.value !== undefined) {
-              this.formData[key] = field.value;
+              if (field.input_type == 'combo') {
+                this.formData[key] = field.value;
+              } else {
+                this.formData[key] = field.value;
+              }
             } else {
               this.formData[key] = null;
             }

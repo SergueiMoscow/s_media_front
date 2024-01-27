@@ -98,7 +98,7 @@ import DynamicForm from "./../components/DynamicForm.vue";
 import apiClient from "@/apiClient";
 import { Server, Storage } from "@/types"
 
-const { servers, storages, fetchStorages } = useServers();
+const { servers, storages, fetchStorages, fetchServers } = useServers();
 let serverForm = reactive({ ...serverFormConfig, submit: addServer }); // Инициализируем как null.
 let storageForm = reactive({ ...storageFormConfig, submit: addStorage }); // Инициализируем как null.
 
@@ -115,6 +115,7 @@ async function addServer(id: Number, formData: Server) {
   } else {
     await apiClient.patch(`/servers/${id}/`, formData)
   }
+  fetchServers()
 }
 
 function addStorage() {
@@ -128,6 +129,7 @@ function handleCancel() {
 
 async function deleteServer(server: Server) {
   await apiClient.delete(`/servers/${server.id}/`)
+  fetchServers()
 }
 
 function showEditServerForm(server: Server) {
@@ -157,6 +159,7 @@ function showAddStorageForm() {
 function showEditStorageForm(storage: Storage) {
   storageForm.fields.name.value = storage.name
   storageForm.fields.path.value = storage.path
+  storageForm.fields.server_id.value = storage.server_id
   storageForm.title = `Добавить хранилище`
   storageForm.id = parseInt(storage.id);
   isVisibleStorageForm.value = true;

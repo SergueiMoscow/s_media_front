@@ -1,5 +1,6 @@
 
 export interface Storage {
+  server_id: string;
   id: string;
   name: string;
   path: string;
