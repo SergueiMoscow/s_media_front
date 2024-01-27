@@ -11,3 +11,8 @@ export interface Server {
   name: string;
   url: string;
 }
+
+export interface Option {
+  value: string;
+  title: string;
+}

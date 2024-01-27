@@ -20,7 +20,7 @@ export const serverFormConfig = {
 
 export const storageFormConfig = {
   title: 'Добавить хранилище',
-  id: 0,
+  id: '',
   fields: {
     server_id: {
       label: 'Выберите сервер',
@@ -28,6 +28,12 @@ export const storageFormConfig = {
       name: 'server_id',
       values_list: [{ value: '1', title: 'Test server 1' }, { value: '2', title: 'Test server 2' }],
       value: '1',
+    },
+    key: {
+      label: "Ключ хранилища",
+      input_type: "text",
+      name: "key",
+      value: '',
     },
     name: {
       label: "Название хранилища",

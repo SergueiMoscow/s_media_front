@@ -67,14 +67,14 @@
                 <v-list-item>
                   <v-list-item-title>Имя: {{ storage.name }}</v-list-item-title>
                   <v-list-item-subtitle
-                    >Путь: {{ storage.path }}</v-list-item-subtitle
+                    >Путь: {{ storage.path }}, id:{{ storage.server_id }}</v-list-item-subtitle
                   >
                 </v-list-item>
                 <v-list-item-action>
-                  <v-btn icon small color="primary" @click="showEditStorageForm">
+                  <v-btn icon small color="primary" @click="showEditStorageForm(storage)">
                     <v-icon small>mdi-pencil</v-icon>
                   </v-btn>
-                  <v-btn icon small color="red">
+                  <v-btn icon small color="red" @click="deleteStorage(storage)">
                     <v-icon small>mdi-delete</v-icon>
                   </v-btn>
                 </v-list-item-action>
@@ -96,20 +96,16 @@ import {
 import { useServers } from "./useServers";
 import DynamicForm from "./../components/DynamicForm.vue";
 import apiClient from "@/apiClient";
-import { Server, Storage } from "@/types"
+import { Server, Storage, Option } from "@/types"
 
-const { servers, storages, fetchStorages, fetchServers } = useServers();
+const { servers, storages, currentServer, fetchStorages, fetchServers } = useServers();
 let serverForm = reactive({ ...serverFormConfig, submit: addServer }); // Инициализируем как null.
 let storageForm = reactive({ ...storageFormConfig, submit: addStorage }); // Инициализируем как null.
 
 const isVisibleServerForm = ref(false);
 const isVisibleStorageForm = ref(false);
 
-// let serverForm = ref({ ...serverFormConfig, submit: addServer });
-// let storageForm = ref({ ...storageFormConfig, submit: addStorage });
-
 async function addServer(id: Number, formData: Server) {
-  // Логика добавления сервера
   if (id == 0) {
     await apiClient.post('/servers/', formData)
   } else {
@@ -118,8 +114,12 @@ async function addServer(id: Number, formData: Server) {
   fetchServers()
 }
 
-function addStorage() {
-  // Логика добавления хранилища
+async function addStorage(id: String, formData: Storage) {
+  if (id === '') {
+    await apiClient.post('/storages/', formData)
+  } else {
+    await apiClient.patch(`/storages/${id}/`, formData)
+  } 
 }
 
 function handleCancel() {
@@ -131,6 +131,12 @@ async function deleteServer(server: Server) {
   await apiClient.delete(`/servers/${server.id}/`)
   fetchServers()
 }
+
+async function deleteStorage(storage: Storage) {
+  await apiClient.delete(`/storages/${currentServer.value}/${storage.id}/`)
+  fetchServers()
+}
+
 
 function showEditServerForm(server: Server) {
   serverForm.fields.name.value = server.name
@@ -148,11 +154,20 @@ function showAddServerForm() {
   isVisibleServerForm.value = true;
 }
 
+function updateServerList(): Option[] {
+  const result: Option[] = []
+  servers.value.forEach(server => {
+    result.push({value: server.id, title: server.name})
+  })
+  return result
+}
+
 function showAddStorageForm() {
-  storageForm.fields.name.value = ''
-  storageForm.fields.path.value = ''
+  storageForm.fields.name.value = 'a'
+  storageForm.fields.path.value = 'b'
+  storageForm.fields.server_id.values_list = updateServerList()
   storageForm.title = `Добавить хранилище`
-  storageForm.id = 0;
+  storageForm.id = '';
   isVisibleStorageForm.value = true;
 }
 
@@ -160,8 +175,8 @@ function showEditStorageForm(storage: Storage) {
   storageForm.fields.name.value = storage.name
   storageForm.fields.path.value = storage.path
   storageForm.fields.server_id.value = storage.server_id
-  storageForm.title = `Добавить хранилище`
-  storageForm.id = parseInt(storage.id);
+  storageForm.title = `Хранилище ${storage.name} (${storage.id}})`
+  storageForm.id = storage.id;
   isVisibleStorageForm.value = true;
 }
 

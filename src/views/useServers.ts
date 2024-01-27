@@ -5,6 +5,7 @@ import { Server, Storage } from './../types'
 export function useServers() {
   const servers: Ref<Server[]> = ref([]);
   const storages: Ref<Storage[]> = ref([]);
+  const currentServer: Ref<Number> = ref(0)
 
   async function fetchServers() {
     const token = localStorage.getItem("access_token");
@@ -23,6 +24,7 @@ export function useServers() {
 
     try {
       const response = await apiClient.get(`${server.url}/storages/`, { headers });
+      currentServer.value = parseInt(server.id)
       storages.value = response.data.results;
     } catch (error) {
       console.error("Ошибка при получении хранилищ:", error);
@@ -34,6 +36,7 @@ export function useServers() {
   return {
     servers,
     storages,
+    currentServer,
     fetchServers,
     fetchStorages
   };
