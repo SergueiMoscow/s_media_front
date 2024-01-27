@@ -7,7 +7,7 @@
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col cols="12" v-for="field in fields" :key="field.name">
+              <v-col cols="12" v-for="(field) in fields" :key="field.name">
                 <template v-if="field.input_type === 'text'">
                   <v-text-field
                     :label="field.label"
@@ -40,7 +40,8 @@
   export default {
     props: {
       title: String,
-      fields: Array,
+      id: Number,
+      fields: Object,
       visible: Boolean,
     },
     data() {
@@ -53,25 +54,24 @@
         immediate: true,
         deep: true,
         handler(fields) {
-          fields.forEach(field => {
-            if (field.default_value !== undefined) {
-              this.formData[field.name] = field.default_value;
+          for (const [key, field] of Object.entries(fields)) {
+            if (field.value !== undefined) {
+              this.formData[key] = field.value;
             } else {
-              this.formData[field.name] = null;
+              this.formData[key] = null;
             }
-          });
+          }
         }
       }
     },
     methods: {
       submit() {
-        this.$emit('submit', this.formData);
+        this.$emit('submit', this.id, this.formData);
       },
       discard() {
-        // Сброс formData перед закрытием
-        this.fields.forEach(field => {
-          this.formData[field.name] = null;
-        });
+        for (const key of Object.keys(this.fields)) {
+          this.formData[key] = null;
+        }
         this.$emit('update:visible', false);
         this.$emit('cancel');
       }

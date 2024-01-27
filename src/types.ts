@@ -6,6 +6,7 @@ export interface Storage {
 }
 
 export interface Server {
+  id: string;
   name: string;
   url: string;
 }

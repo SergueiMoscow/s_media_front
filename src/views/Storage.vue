@@ -6,14 +6,15 @@
           <v-toolbar flat dense color="white">
             <v-toolbar-title>Серверы</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn fab small color="primary" @click="showAddServerForm = true">
+            <v-btn fab small color="primary" @click="showAddServerForm()">
               <v-icon dark>mdi-plus</v-icon>
             </v-btn>
           </v-toolbar>
           <dynamic-form
-            :title="serverForm.title"
-            :fields="serverForm.fields"
-            :visible="showAddServerForm"
+            :id="serverForm?.id"
+            :title="serverForm?.title"
+            :fields="serverForm?.fields"
+            :visible="isVisibleServerForm"
             @submit="addServer"
             @cancel="handleCancel"
           ></dynamic-form>
@@ -31,10 +32,10 @@
                   </v-list-item-subtitle>
                 </v-list-item>
                 <v-list-item-action>
-                  <v-btn icon small color="primary">
+                  <v-btn icon small color="primary" @click="showEditServerForm(server)">
                     <v-icon small>mdi-pencil</v-icon>
                   </v-btn>
-                  <v-btn icon small color="red">
+                  <v-btn icon small color="red" @click="deleteServer(server)">
                     <v-icon small>mdi-delete</v-icon>
                   </v-btn>
                 </v-list-item-action>
@@ -48,14 +49,15 @@
           <v-toolbar flat dense color="white">
             <v-toolbar-title>Хранилища</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn fab small color="primary" @click="showAddStorageForm = true">
+            <v-btn fab small color="primary" @click="showAddStorageForm()">
               <v-icon dark>mdi-plus</v-icon>
             </v-btn>
           </v-toolbar>
           <dynamic-form
-            :title="storageForm.title"
-            :fields="storageForm.fields"
-            :visible="showAddStorageForm"
+            :id="storageForm?.id"
+            :title="storageForm?.title"
+            :fields="storageForm?.fields"
+            :visible="isVisibleStorageForm"
             @submit="addStorage"
             @cancel="handleCancel"
           ></dynamic-form>
@@ -69,7 +71,7 @@
                   >
                 </v-list-item>
                 <v-list-item-action>
-                  <v-btn icon small color="primary">
+                  <v-btn icon small color="primary" @click="showEditStorageForm">
                     <v-icon small>mdi-pencil</v-icon>
                   </v-btn>
                   <v-btn icon small color="red">
@@ -86,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import {
   serverFormConfig,
   storageFormConfig,
@@ -95,22 +97,24 @@ import { useServers } from "./useServers";
 import DynamicForm from "./../components/DynamicForm.vue";
 import apiClient from "@/apiClient";
 import { Server, Storage } from "@/types"
-import { availableParallelism } from "os";
 
 const { servers, storages, fetchStorages } = useServers();
+let serverForm = reactive({ ...serverFormConfig, submit: addServer }); // Инициализируем как null.
+let storageForm = reactive({ ...storageFormConfig, submit: addStorage }); // Инициализируем как null.
 
-const showAddServerForm = ref(false);
-const showAddStorageForm = ref(false);
+const isVisibleServerForm = ref(false);
+const isVisibleStorageForm = ref(false);
 
-const serverForm = ref({ ...serverFormConfig, submit: addServer });
-const storageForm = ref({ ...storageFormConfig, submit: addStorage });
+// let serverForm = ref({ ...serverFormConfig, submit: addServer });
+// let storageForm = ref({ ...storageFormConfig, submit: addStorage });
 
-async function addServer(formData: Server) {
+async function addServer(id: Number, formData: Server) {
   // Логика добавления сервера
-  console.log('Add server')
-  const aaa = await apiClient.post('/servers/', formData)
-  // debugger
-  // console.log('Server add response', aaa)
+  if (id == 0) {
+    await apiClient.post('/servers/', formData)
+  } else {
+    await apiClient.patch(`/servers/${id}/`, formData)
+  }
 }
 
 function addStorage() {
@@ -118,9 +122,46 @@ function addStorage() {
 }
 
 function handleCancel() {
-  showAddServerForm.value = false;
-  showAddStorageForm.value = false;
+  isVisibleServerForm.value = false;
+  isVisibleStorageForm.value = false;
 }
+
+async function deleteServer(server: Server) {
+  await apiClient.delete(`/servers/${server.id}/`)
+}
+
+function showEditServerForm(server: Server) {
+  serverForm.fields.name.value = server.name
+  serverForm.fields.url.value = server.url
+  serverForm.id = parseInt(server.id)
+  serverForm.title = `Сервер ${server.name} (${server.id})`
+  isVisibleServerForm.value = true;
+}
+
+function showAddServerForm() {
+  serverForm.fields.name.value = ''
+  serverForm.fields.url.value = ''
+  serverForm.id = 0
+  serverForm.title = `Добавить сервер`
+  isVisibleServerForm.value = true;
+}
+
+function showAddStorageForm() {
+  storageForm.fields.name.value = ''
+  storageForm.fields.path.value = ''
+  storageForm.title = `Добавить хранилище`
+  storageForm.id = 0;
+  isVisibleStorageForm.value = true;
+}
+
+function showEditStorageForm(storage: Storage) {
+  storageForm.fields.name.value = storage.name
+  storageForm.fields.path.value = storage.path
+  storageForm.title = `Добавить хранилище`
+  storageForm.id = parseInt(storage.id);
+  isVisibleStorageForm.value = true;
+}
+
 </script>
 
 <style scoped>

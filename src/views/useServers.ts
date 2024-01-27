@@ -22,7 +22,7 @@ export function useServers() {
     const headers = { Authorization: `Bearer ${token}` };
 
     try {
-      const response = await apiClient.get(`${server.url}/storages`, { headers });
+      const response = await apiClient.get(`${server.url}/storages/`, { headers });
       storages.value = response.data.results;
     } catch (error) {
       console.error("Ошибка при получении хранилищ:", error);
