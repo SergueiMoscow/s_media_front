@@ -1,6 +1,6 @@
 export const serverFormConfig = {
   title: 'Добавить сервер',
-  id: 0,
+  id: '',
   fields: {
     name: {
       label: "Название сервера",

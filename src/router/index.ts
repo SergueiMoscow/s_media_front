@@ -21,7 +21,11 @@ const routes = [
   {
     path: '/storages',
     component: () => import('@/views/Storage.vue'),
-  }
+  },
+  {
+    path: '/folder_content',
+    component: () => import('@/views/FolderContent.vue'),
+  },
 ]
 
 const router = createRouter({

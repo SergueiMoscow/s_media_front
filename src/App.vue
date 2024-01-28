@@ -89,16 +89,16 @@ let navigation_items = [
     requiresAuth: false,
   },
   {
-    title: 'Hello world!',
-    value: 'hello_world',
-    icon: "mdi-earth",
-    path: "/hello_world",
+    title: 'Хранилища',
+    value: 'content',
+    icon: "mdi-database",
+    path: "/folder_content",
     requiresAuth: false,
   },
   {
-    title: 'Хранилища',
+    title: 'Серверы',
     value: 'storages',
-    icon: "mdi-database",
+    icon: "mdi-server",
     path: "/storages",
     requiresAuth: true,
   }

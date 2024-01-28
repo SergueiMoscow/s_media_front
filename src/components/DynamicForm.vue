@@ -40,7 +40,7 @@
   export default {
     props: {
       title: String,
-      id: Number,
+      id: String,
       fields: Object,
       visible: Boolean,
     },
