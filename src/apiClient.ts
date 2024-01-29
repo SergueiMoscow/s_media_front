@@ -43,7 +43,7 @@ apiClient.interceptors.response.use(response => {
   console.log('apiClient error', error)
   if (error.response && error.response.data) {
     let message = ''
-    debugger
+    // debugger
     for (const field in error.response.data) {
       if (error.response.data[field] instanceof Array) {
         message += `${field}: ${error.response.data[field].join(', ')}\n`

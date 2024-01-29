@@ -1,10 +1,9 @@
 <template>
-    <div class="folder-card1">
+    <div class="folder-card__container">
       <div class="folder-card__details">
         <div class="folder-card__title">{{ folderName }}</div>
         <div class="folder-card__info">{{ storageName }} <span class="folder-card__info--subtext">({{ serverName }})</span></div>
-        <div class="folder-card__info">{{ folderPath }}</div>
-        <div class="folder-card__info">
+        <div class="folder-card__image">
           <div><img :src="folderImage" class="folder-card__img" alt="folder" /></div>
           Папок: {{ subfolderCount }} 
           <span class="folder-card__info--subtext">(всего {{ totalSubfolderCount }})</span>
@@ -65,12 +64,16 @@
     text-align: center;
   }
   
-  .folder-card__info {
+  .folder-card__info, .folder-card__image{
     font-size: 0.9em;
     color: #333;
-    text-align: left;
+    text-align: center;
   }
   
+.folder-card__image {
+  width: 100%;
+}
+
   .folder-card__info--subtext {
     font-size: 0.7em;
     color: #999;
@@ -93,5 +96,6 @@
       max-width: calc((100% - 6em) / 3);
     }
   }
+  
   </style>
   

@@ -21,45 +21,11 @@
 import { defineComponent, onMounted, ref } from "vue";
 import FolderCardComponent from "@/components/FolderCardComponent.vue";
 import apiClient from "@/apiClient";
-interface Count {
-  direct: number;
-  total: number;
-}
-
-interface Folder {
-  name: string;
-  time: string;
-  size: number;
-  folders_count: Count;
-  files_count: Count;
-  storage_id: string;
-  storage_name: string;
-  path: string;
-  server_id: number;
-  server_name: string;
-  server_url: string;
-  image_url: string;
-}
+import { Folder } from "@/types";
 
 export default defineComponent({
   components: {
     FolderCardComponent,
-  },
-  data() {
-    return {
-      folderInfo: {
-        folderName: "Documents",
-        storageName: "Main Storage",
-        serverName: "Server 1",
-        folderPath: "/root/documents",
-        subfolderCount: 5,
-        totalSubfolderCount: 13,
-        fileCount: 10,
-        totalFileCount: 24,
-        folderImage: "https://example.com/folderimage.png",
-        fileImage: "https://example.com/fileimage.png",
-      },
-    };
   },
   setup() {
     const folders = ref<Folder[]>([]);
@@ -77,7 +43,7 @@ export default defineComponent({
               ...folder,
               image_url: `${
                 import.meta.env.VITE_BACKEND_URL
-              }/folders_image?folders=${folder.folders_count.direct}`,
+              }/folders_image?folders=${folder.folders_count.direct}&timestamp=${new Date().getTime()}&rand=${Math.random()}`,
             };
           });
         }
@@ -99,12 +65,6 @@ export default defineComponent({
   flex-wrap: wrap;
   justify-content: space-around;
 }
-/*
-.folder-card {
-  flex: 1 1 content;  /* grow shrink basis Управляет размером. Исправьте на необходимый процент или другую единицу измерения * /
-  margin: 10px;  /* Разделяет элементы. Исправьте на нужное значение * /
-}
-*/
 .folder-card {
   display: flex;
   flex-direction: column;
@@ -121,33 +81,6 @@ export default defineComponent({
   transition: box-shadow 0.3s ease;
 }
 
-.folder-card__details {
-  margin: 0.2em 0;
-}
-
-.folder-card__title {
-  font-size: 1.2em;
-  font-weight: bold;
-  margin-bottom: 0.5em;
-  text-align: center;
-}
-
-.folder-card__info {
-  font-size: 0.9em;
-  color: #333;
-  text-align: left;
-}
-
-.folder-card__info--subtext {
-  font-size: 0.7em;
-  color: #999;
-}
-
-.folder-card__img {
-  max-width: 100%;
-  aspect-ratio: 16 / 9;
-  margin: 0.5em 0;
-}
 
 @media screen and (min-width: 800px) {
   .folder-card {

@@ -16,3 +16,23 @@ export interface Option {
   value: string;
   title: string;
 }
+
+export interface Count {
+  direct: number;
+  total: number;
+}
+
+export interface Folder {
+  name: string;
+  time: string;
+  size: number;
+  folders_count: Count;
+  files_count: Count;
+  storage_id: string;
+  storage_name: string;
+  path: string;
+  server_id: number;
+  server_name: string;
+  server_url: string;
+  image_url: string;
+}
