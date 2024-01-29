@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Инициализируем инстанс Axios
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL, // Замените на реальный URL вашего API
+  baseURL: import.meta.env.VITE_BACKEND_URL,
 });
 
 // Добавляем интерцептор запросов для инъекции токена авторизации
