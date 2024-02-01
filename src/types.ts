@@ -35,4 +35,5 @@ export interface Folder {
   server_name: string;
   server_url: string;
   image_url: string;
+  collage_url: string;
 }

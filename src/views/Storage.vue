@@ -141,7 +141,7 @@ async function deleteStorage(storage: Storage) {
 function showEditServerForm(server: Server) {
   serverForm.fields.name.value = server.name
   serverForm.fields.url.value = server.url
-  serverForm.id = parseInt(server.id)
+  serverForm.id = server.id
   serverForm.title = `Сервер ${server.name} (${server.id})`
   isVisibleServerForm.value = true;
 }
@@ -149,7 +149,7 @@ function showEditServerForm(server: Server) {
 function showAddServerForm() {
   serverForm.fields.name.value = ''
   serverForm.fields.url.value = ''
-  serverForm.id = 0
+  serverForm.id = '0'
   serverForm.title = `Добавить сервер`
   isVisibleServerForm.value = true;
 }

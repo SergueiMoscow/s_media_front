@@ -11,7 +11,7 @@
         :file-count="folder.files_count.direct"
         :total-file-count="folder.files_count.total"
         :folder-image="folder.image_url"
-        :file-image="'https://example.com/fileimage.png'"
+        :file-image="folder.collage_url"
       />
     </div>
   </div>
@@ -44,6 +44,7 @@ export default defineComponent({
               image_url: `${
                 import.meta.env.VITE_BACKEND_URL
               }/folders_image?folders=${folder.folders_count.direct}&timestamp=${new Date().getTime()}&rand=${Math.random()}`,
+              collage_url: `${import.meta.env.VITE_BACKEND_URL}/folder_collage/${folder.server_id}/${folder.storage_id}/?folder=&timestamp=${new Date().getTime()}&rand=${Math.random()}`
             };
           });
         }
