@@ -25,6 +25,13 @@ const routes = [
   {
     path: '/folder_content',
     component: () => import('@/views/FolderContent.vue'),
+    props: true,
+  },  
+  {
+    name: 'FolderContent',
+    path: '/folder_content/:server?/:storage?/:folder?',
+    component: () => import('@/views/FolderContent.vue'),
+    props: true,
   },
 ]
 

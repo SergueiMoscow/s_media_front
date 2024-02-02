@@ -2,16 +2,7 @@
   <div class="folder-container">
     <div class="folder-card" v-for="folder in folders" :key="folder.storage_id">
       <FolderCardComponent
-        :folder-name="folder.name"
-        :storage-name="folder.storage_name"
-        :server-name="folder.server_name"
-        :folder-path="folder.path"
-        :subfolder-count="folder.folders_count.direct"
-        :total-subfolder-count="folder.folders_count.total"
-        :file-count="folder.files_count.direct"
-        :total-file-count="folder.files_count.total"
-        :folder-image="folder.image_url"
-        :file-image="folder.collage_url"
+        :folder="folder"
       />
     </div>
   </div>
@@ -24,22 +15,22 @@ import apiClient from "@/apiClient";
 import { Folder } from "@/types";
 
 function arrayBufferToBase64(buffer: any): string {
-    if (buffer instanceof ArrayBuffer) {
-        let binary = '';
-        const bytes = new Uint8Array(buffer);
-        const len = bytes.byteLength;
-        if (len === 0) {
-            console.error('Buffer has no data.');
-            return '';
-        }
-        for (let i = 0; i < len; i++) {
-            binary += String.fromCharCode(bytes[i]);
-        }
-        return window.btoa(binary);
-    } else {
-        console.error('The input is not an ArrayBuffer.');
-        return '';
+  if (buffer instanceof ArrayBuffer) {
+    let binary = "";
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    if (len === 0) {
+      console.error("Buffer has no data.");
+      return "";
     }
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return window.btoa(binary);
+  } else {
+    console.error("The input is not an ArrayBuffer.");
+    return "";
+  }
 }
 
 export default defineComponent({
@@ -57,11 +48,14 @@ export default defineComponent({
       const url = `${
         import.meta.env.VITE_BACKEND_URL
       }/folder_collage/${server_id}/${storage_id}/?folder=${folder}&timestamp=${new Date().getTime()}&rand=${Math.random()}`;
-      const response = await apiClient.get(url, { responseType: 'arraybuffer' });
+      const response = await apiClient.get(url, {
+        responseType: "arraybuffer",
+      });
       return response.data;
     };
 
     onMounted(async () => {
+      console.log('onMounted FolderContent')
       try {
         const response = await apiClient.get("/servers_content/");
         console.log("Content response:");
@@ -72,23 +66,21 @@ export default defineComponent({
           let imageSourceType = "js_func";
           if (imageSourceType == "direct") {
             // вариант img src='ссылка'. Так не добавляется header с токеном
-            folders.value = response.data.results.map(
-              (folder: Folder) => {
-                return {
-                  ...folder,
-                  image_url: `${
-                    import.meta.env.VITE_BACKEND_URL
-                  }/folders_image?folders=${
-                    folder.folders_count.direct
-                  }&timestamp=${new Date().getTime()}&rand=${Math.random()}`,
-                  collage_url: `${
-                    import.meta.env.VITE_BACKEND_URL
-                  }/folder_collage/${folder.server_id}/${
-                    folder.storage_id
-                  }/?folder=&timestamp=${new Date().getTime()}&rand=${Math.random()}`,
-                };
-              }
-            );
+            folders.value = response.data.results.map((folder: Folder) => {
+              return {
+                ...folder,
+                image_url: `${
+                  import.meta.env.VITE_BACKEND_URL
+                }/folders_image?folders=${
+                  folder.folders_count.direct
+                }&timestamp=${new Date().getTime()}&rand=${Math.random()}`,
+                collage_url: `${
+                  import.meta.env.VITE_BACKEND_URL
+                }/folder_collage/${folder.server_id}/${
+                  folder.storage_id
+                }/?folder=&timestamp=${new Date().getTime()}&rand=${Math.random()}`,
+              };
+            });
           } else if (imageSourceType == "js_func") {
             // вариант img src='загруженная картинка'. Получаем её отдельным запросом
             const folderPromises = response.data.results.map(
@@ -99,8 +91,8 @@ export default defineComponent({
                   folder.storage_id,
                   folder.name
                 );
-                const collageImage = arrayBufferToBase64(collageBytesArray)
-                const collageUrl = `data:image/jpeg;base64,${collageImage}`
+                const collageImage = arrayBufferToBase64(collageBytesArray);
+                const collageUrl = `data:image/jpeg;base64,${collageImage}`;
 
                 return {
                   ...folder,
@@ -116,7 +108,6 @@ export default defineComponent({
 
             // Используем Promise.all для ожидания завершения всех асинхронных операций
             folders.value = await Promise.all(folderPromises);
-            const a = 1
           }
         }
       } catch (error) {

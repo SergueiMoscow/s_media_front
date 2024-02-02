@@ -93,7 +93,7 @@ let navigation_items = [
     value: 'content',
     icon: "mdi-database",
     path: "/folder_content",
-    requiresAuth: false,
+    requiresAuth: true,
   },
   {
     title: 'Серверы',
