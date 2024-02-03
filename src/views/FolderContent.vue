@@ -1,9 +1,7 @@
 <template>
   <div class="folder-container">
     <div class="folder-card" v-for="folder in folders" :key="folder.storage_id">
-      <FolderCardComponent
-        :folder="folder"
-      />
+      <FolderCardComponent :folder="folder" />
     </div>
   </div>
 </template>
@@ -13,9 +11,8 @@ import { defineComponent, onMounted, watch, ref } from "vue";
 import FolderCardComponent from "@/components/FolderCardComponent.vue";
 import apiClient from "@/apiClient";
 import { Folder, ParametersFolderView } from "@/types";
-import { useRoute } from 'vue-router'
-import { loadCollage, processFolder } from "@/views/useFolderContent"
-
+import { useRoute } from "vue-router";
+import { loadCollage, processFolder } from "@/views/useFolderContent";
 
 export default defineComponent({
   components: {
@@ -23,13 +20,16 @@ export default defineComponent({
   },
   setup() {
     const folders = ref<Folder[]>([]);
-    const route = useRoute()
-    
+    const route = useRoute();
+
     const refresh = async (params?: ParametersFolderView) => {
       try {
-        const response = (params && params.server)
-          ? await apiClient.get(`/storage/${params.server}/${params.storage}/?folder=${params.folder}`)
-          : await apiClient.get("/servers_content/")
+        const response =
+          params && params.server
+            ? await apiClient.get(
+                `/storage/${params.server}/${params.storage}/?folder=${params.folder}`
+              )
+            : await apiClient.get("/servers_content/");
         console.log("Content response:");
         console.log(response);
         if (response.data) {
@@ -38,27 +38,28 @@ export default defineComponent({
           let imageSourceType = "js_func";
           if (imageSourceType == "direct") {
             // вариант img src='ссылка'. Так не добавляется header с токеном
-            folders.value = response.data.results.folders.map((folder: Folder) => {
-              return {
-                ...folder,
-                image_url: `${
-                  import.meta.env.VITE_BACKEND_URL
-                }/folders_image?folders=${
-                  folder.folders_count.direct
-                }&timestamp=${new Date().getTime()}&rand=${Math.random()}`,
-                collage_url: `${
-                  import.meta.env.VITE_BACKEND_URL
-                }/folder_collage/${folder.server_id}/${
-                  folder.storage_id
-                }/?folder=&timestamp=${new Date().getTime()}&rand=${Math.random()}`,
-              };
-            });
+            folders.value = response.data.results.folders.map(
+              (folder: Folder) => {
+                return {
+                  ...folder,
+                  image_url: `${
+                    import.meta.env.VITE_BACKEND_URL
+                  }/folders_image?folders=${
+                    folder.folders_count.direct
+                  }&timestamp=${new Date().getTime()}&rand=${Math.random()}`,
+                  collage_url: `${
+                    import.meta.env.VITE_BACKEND_URL
+                  }/folder_collage/${folder.server_id}/${
+                    folder.storage_id
+                  }/?folder=&timestamp=${new Date().getTime()}&rand=${Math.random()}`,
+                };
+              }
+            );
           } else if (imageSourceType == "js_func") {
             // вариант img src='загруженная картинка'. Получаем её отдельным запросом
             const folderPromises = response.data.results.folders.map(
-
               async (folder: Folder) => {
-                return await processFolder(folder, params)
+                return await processFolder(folder, params);
               }
             );
 
@@ -68,24 +69,27 @@ export default defineComponent({
         }
       } catch (error) {
         console.error(error);
-      }      
-    }
+      }
+    };
 
     onMounted(async () => {
       const params: ParametersFolderView = {
-        server: route.params.server?.toString() || '',
-        storage: route.params.storage?.toString() || '',
-        folder: route.params.folder?.toString() || '',
-      }
-      console.log('onMounted FolderContent')
-      refresh(params)
+        server: route.params.server?.toString() || "",
+        storage: route.params.storage?.toString() || "",
+        folder: route.params.folder?.toString() || "",
+      };
+      console.log("onMounted FolderContent");
+      refresh(params);
     });
 
-
-    watch(() => route.params, (newParams) => {
-      // Логика обновления, аналогично в том, что должно произойти при onMounted
-      refresh(newParams as unknown as ParametersFolderView)
-    }, { immediate: true })
+    watch(
+      () => route.params,
+      (newParams) => {
+        // Логика обновления, аналогично в том, что должно произойти при onMounted
+        refresh(newParams as unknown as ParametersFolderView);
+      },
+      { immediate: true }
+    );
 
     return {
       folders,
