@@ -1,5 +1,5 @@
 // Composables
-import { createRouter, createWebHistory } from 'vue-router'
+import { RouteLocationNormalizedLoaded, createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   {
@@ -32,6 +32,7 @@ const routes = [
     path: '/folder_content/:server?/:storage?/:folder?',
     component: () => import('@/views/FolderContent.vue'),
     props: true,
+    meta: { key: (route: RouteLocationNormalizedLoaded) => route.fullPath },
   },
 ]
 

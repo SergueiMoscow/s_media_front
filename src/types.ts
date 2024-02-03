@@ -37,3 +37,9 @@ export interface Folder {
   image_url: string;
   collage_url: string;
 }
+
+export interface ParametersFolderView {
+  server: string;
+  storage: string;
+  folder: string;
+}

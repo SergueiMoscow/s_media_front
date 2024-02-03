@@ -9,10 +9,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, watch, ref } from "vue";
 import FolderCardComponent from "@/components/FolderCardComponent.vue";
 import apiClient from "@/apiClient";
-import { Folder } from "@/types";
+import { Folder, ParametersFolderView } from "@/types";
+import { RouteParams, useRoute } from 'vue-router'
+
 
 function arrayBufferToBase64(buffer: any): string {
   if (buffer instanceof ArrayBuffer) {
@@ -39,6 +41,7 @@ export default defineComponent({
   },
   setup() {
     const folders = ref<Folder[]>([]);
+    const route = useRoute()
 
     const loadCollage = async (
       server_id: String,
@@ -51,22 +54,30 @@ export default defineComponent({
       const response = await apiClient.get(url, {
         responseType: "arraybuffer",
       });
+      console.log(`LoadCollage ${server_id}, ${storage_id}, ${folder}`)
+      console.log(`LoadCollage url ${url}`)
+
       return response.data;
     };
-
-    onMounted(async () => {
-      console.log('onMounted FolderContent')
+    
+    const refresh = async (params?: ParametersFolderView) => {
       try {
-        const response = await apiClient.get("/servers_content/");
+        const url = (params && params.server)
+          ? `/storage/${params.server}/${params.storage}/?folder=${params.folder}`
+          : "/servers_content/"
+        // const response = apiClient.get(url)
+        const response = (params && params.server)
+          ? await apiClient.get(`/storage/${params.server}/${params.storage}/?folder=${params.folder}`)
+          : await apiClient.get("/servers_content/")
         console.log("Content response:");
         console.log(response);
         if (response.data) {
-          folders.value = response.data.results;
+          // folders.value = response.data.results.folders;
           // 2 варианта img src:
           let imageSourceType = "js_func";
           if (imageSourceType == "direct") {
             // вариант img src='ссылка'. Так не добавляется header с токеном
-            folders.value = response.data.results.map((folder: Folder) => {
+            folders.value = response.data.results.folders.map((folder: Folder) => {
               return {
                 ...folder,
                 image_url: `${
@@ -83,12 +94,30 @@ export default defineComponent({
             });
           } else if (imageSourceType == "js_func") {
             // вариант img src='загруженная картинка'. Получаем её отдельным запросом
-            const folderPromises = response.data.results.map(
+            const folderPromises = response.data.results.folders.map(
               async (folder: Folder) => {
+                let serverId;
+                if (folder.server_id != null) { // Проверяем, существует ли server_id в объекте folder
+                  serverId = folder.server_id.toString();
+                } else if (params && params.server && parseInt(params.server) > 0) { // Проверяем, валиден ли params.server и больше ли он нуля
+                  serverId = params.server.toString();
+                } else {
+                  throw new Error('No valid server_id provided.');
+                }
+
+                let storageId;
+                if (folder.storage_id != null) { // Проверяем, существует ли server_id в объекте folder
+                  storageId = folder.storage_id;
+                } else if (params && params.server && parseInt(params.server) > 0) { // Проверяем, валиден ли params.server и больше ли он нуля
+                  storageId = params.storage;
+                } else {
+                  throw new Error('No valid server_id provided.');
+                }
+
                 // Здесь выполняем функцию loadCollage для каждой папки
                 const collageBytesArray = await loadCollage(
-                  folder.server_id.toString(),
-                  folder.storage_id,
+                  serverId,
+                  storageId,
                   folder.name
                 );
                 const collageImage = arrayBufferToBase64(collageBytesArray);
@@ -112,8 +141,24 @@ export default defineComponent({
         }
       } catch (error) {
         console.error(error);
+      }      
+    }
+
+    onMounted(async () => {
+      const params: ParametersFolderView = {
+        server: route.params.server?.toString() || '',
+        storage: route.params.storage?.toString() || '',
+        folder: route.params.folder?.toString() || '',
       }
+      console.log('onMounted FolderContent')
+      refresh(params)
     });
+
+
+    watch(() => route.params, (newParams, oldParams) => {
+      // Логика обновления, аналогично в том, что должно произойти при onMounted
+      refresh(newParams as unknown as ParametersFolderView)
+    }, { immediate: true })
 
     return {
       folders,
