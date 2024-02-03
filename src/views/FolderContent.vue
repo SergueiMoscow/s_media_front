@@ -13,7 +13,7 @@ import { defineComponent, onMounted, watch, ref } from "vue";
 import FolderCardComponent from "@/components/FolderCardComponent.vue";
 import apiClient from "@/apiClient";
 import { Folder, ParametersFolderView } from "@/types";
-import { RouteParams, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 
 
 function arrayBufferToBase64(buffer: any): string {
@@ -62,9 +62,9 @@ export default defineComponent({
     
     const refresh = async (params?: ParametersFolderView) => {
       try {
-        const url = (params && params.server)
-          ? `/storage/${params.server}/${params.storage}/?folder=${params.folder}`
-          : "/servers_content/"
+        // const url = (params && params.server)
+        //   ? `/storage/${params.server}/${params.storage}/?folder=${params.folder}`
+        //   : "/servers_content/"
         // const response = apiClient.get(url)
         const response = (params && params.server)
           ? await apiClient.get(`/storage/${params.server}/${params.storage}/?folder=${params.folder}`)
