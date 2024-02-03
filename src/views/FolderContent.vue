@@ -14,7 +14,7 @@ import FolderCardComponent from "@/components/FolderCardComponent.vue";
 import apiClient from "@/apiClient";
 import { Folder, ParametersFolderView } from "@/types";
 import { useRoute } from 'vue-router'
-import { loadCollage, arrayBufferToBase64 } from "@/views/useFolderContent"
+import { loadCollage, processFolder } from "@/views/useFolderContent"
 
 
 export default defineComponent({
@@ -56,43 +56,9 @@ export default defineComponent({
           } else if (imageSourceType == "js_func") {
             // вариант img src='загруженная картинка'. Получаем её отдельным запросом
             const folderPromises = response.data.results.folders.map(
+
               async (folder: Folder) => {
-                let serverId;
-                if (folder.server_id != null) { // Проверяем, существует ли server_id в объекте folder
-                  serverId = folder.server_id.toString();
-                } else if (params && params.server && parseInt(params.server) > 0) { // Проверяем, валиден ли params.server и больше ли он нуля
-                  serverId = params.server.toString();
-                } else {
-                  throw new Error('No valid server_id provided.');
-                }
-
-                let storageId;
-                if (folder.storage_id != null) { // Проверяем, существует ли server_id в объекте folder
-                  storageId = folder.storage_id;
-                } else if (params && params.server && parseInt(params.server) > 0) { // Проверяем, валиден ли params.server и больше ли он нуля
-                  storageId = params.storage;
-                } else {
-                  throw new Error('No valid server_id provided.');
-                }
-
-                // Здесь выполняем функцию loadCollage для каждой папки
-                const collageBytesArray = await loadCollage(
-                  serverId,
-                  storageId,
-                  folder.name
-                );
-                const collageImage = arrayBufferToBase64(collageBytesArray);
-                const collageUrl = `data:image/jpeg;base64,${collageImage}`;
-
-                return {
-                  ...folder,
-                  image_url: `${
-                    import.meta.env.VITE_BACKEND_URL
-                  }/folders_image?folders=${
-                    folder.folders_count.direct
-                  }&timestamp=${new Date().getTime()}&rand=${Math.random()}`,
-                  collage_url: collageUrl, // Здесь вы будете использовать полученный URL в качестве значения
-                };
+                return await processFolder(folder, params)
               }
             );
 
