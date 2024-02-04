@@ -43,3 +43,13 @@ export interface ParametersFolderView {
   storage: string;
   folder: string;
 }
+
+export interface FileObject {
+  name: string;
+  type: string;
+  full_path: string;
+  size: number;
+  created: string;
+  group: string;
+  image_url: string;
+}

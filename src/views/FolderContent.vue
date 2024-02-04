@@ -4,22 +4,34 @@
       <FolderCardComponent :folder="folder" />
     </div>
   </div>
+  <div class="folder-container">
+    <div class="folder-card" v-for="file in files" :key="file.name">
+      <FileCardComponent
+        :file="file"
+        :folder_data="folder_data"
+        />
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, watch, ref } from "vue";
 import FolderCardComponent from "@/components/FolderCardComponent.vue";
+import FileCardComponent from "@/components/FileCardComponent.vue";
 import apiClient from "@/apiClient";
-import { Folder, ParametersFolderView } from "@/types";
+import { Folder, ParametersFolderView, FileObject } from "@/types";
 import { useRoute } from "vue-router";
 import { loadCollage, processFolder } from "@/views/useFolderContent";
 
 export default defineComponent({
   components: {
     FolderCardComponent,
+    FileCardComponent,
   },
   setup() {
     const folders = ref<Folder[]>([]);
+    const files = ref<FileObject[]>([]);
+    const folder_data = ref<ParametersFolderView>()
     const route = useRoute();
 
     const refresh = async (params?: ParametersFolderView) => {
@@ -30,9 +42,11 @@ export default defineComponent({
                 `/storage/${params.server}/${params.storage}/?folder=${params.folder}`
               )
             : await apiClient.get("/servers_content/");
+            folder_data.value = params
         console.log("Content response:");
         console.log(response);
         if (response.data) {
+          files.value = response.data.results.files
           // folders.value = response.data.results.folders;
           // 2 варианта img src:
           let imageSourceType = "js_func";
@@ -93,7 +107,9 @@ export default defineComponent({
 
     return {
       folders,
+      files,
       loadCollage,
+      folder_data,
     };
   },
 });
