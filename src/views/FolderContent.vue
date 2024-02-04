@@ -8,7 +8,7 @@
     <div class="folder-card" v-for="file in files" :key="file.name">
       <FileCardComponent
         :file="file"
-        :folder_data="folder_data"
+        :folder_data?="folder_data"
         />
     </div>
   </div>
