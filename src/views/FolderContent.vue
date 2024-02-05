@@ -8,7 +8,7 @@
     <div class="folder-card" v-for="file in files" :key="file.name">
       <FileCardComponent
         :file="file"
-        :folder_data?="folder_data"
+        :folder_data="folder_data"
         />
     </div>
   </div>
@@ -35,6 +35,8 @@ export default defineComponent({
     const route = useRoute();
 
     const refresh = async (params?: ParametersFolderView) => {
+      files.value = []
+      folders.value = []
       try {
         const response =
           params && params.server

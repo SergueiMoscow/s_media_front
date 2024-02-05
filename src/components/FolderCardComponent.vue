@@ -21,7 +21,7 @@
             :src="folder.collage_url"
             class="folder-card__img"
             alt="file"
-            @click="navigateToFolder()"
+            @click="navigateToFolder(folder)"
           />
         </div>
         Файлов: {{ folder.files_count.direct }}
@@ -48,13 +48,13 @@ export default defineComponent({
   setup(props) {
     const router = useRouter();
 
-    const  navigateToFolder = () => {
+    const  navigateToFolder = (folder: Folder) => {
       router.push({
-        name: "FolderContent", // Должно соответствовать имени маршрута в вашем router файле
+        name: "FolderContent",
         params: {
-          server: props.folder.server_id,
-          storage: props.folder.storage_id,
-          folder: props.folder.name,
+          server: folder.server_id,
+          storage: folder.storage_id,
+          folder: folder.name,
         },
       });
     };

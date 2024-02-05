@@ -24,7 +24,7 @@ export default defineComponent({
     },
     folder_data: {
       type: Object as PropType<ParametersFolderView>,
-      required: false,
+      required: true,
     },
   },
   setup(props) {
