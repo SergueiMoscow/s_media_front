@@ -1,6 +1,6 @@
 <template>
   <div class="file-card">
-    <img :src="imageUrl" @click="fetchImage" class="file-card__img" />
+    <img :src="imageUrl" text="true" @click="fetchImage" class="file-card__img" />
     <div class="file-card__details">
       <div class="file-card__title">{{ file.name }}</div>
       <div class="file-card__info">
@@ -38,7 +38,7 @@ export default defineComponent({
       // Пример простейшего форматера размера файла
       return (size / 1024).toFixed(2) + " KB";
     };
-    const fetchImage = "";
+    const fetchImage = () => {};
 
     return { fetchImage, formatSize, imageUrl };
   },

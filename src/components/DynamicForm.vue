@@ -29,60 +29,73 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="discard">Отмена</v-btn>
-          <v-btn color="blue darken-1" text @click="submit">OK</v-btn>
+          <v-btn color="blue darken-1" text="true" @click="discard">Отмена</v-btn>
+          <v-btn color="blue darken-1" text="true" @click="submit">OK</v-btn>
         </v-card-actions>
       </v-card>
     </div>
   </template>
   
-  <script>
-  export default {
-    props: {
-      title: String,
-      id: String,
-      fields: Object,
-      visible: Boolean,
+<script lang="ts">
+import { PropType } from "vue";
+
+export default {
+  props: {
+    title: {
+      type: String as PropType<string>,
+      default: '',
     },
-    data() {
-      return {
-        formData: {},
-      };
+    id: {
+      type: String as PropType<string>,
+      default: '',
     },
-    watch: {
-      fields: {
-        immediate: true,
-        deep: true,
-        handler(fields) {
-          for (const [key, field] of Object.entries(fields)) {
-            if (field.value !== undefined) {
-              if (field.input_type == 'combo') {
-                this.formData[key] = field.value;
-              } else {
-                this.formData[key] = field.value;
-              }
+    fields: {
+      type: Object as PropType<{ [key: string]: any }>,
+      default: () => ({}),
+    },
+    visible: {
+      type: Boolean as PropType<boolean>,
+      default: false,
+    },
+  },
+  data(): {formData: {[key: string]: any}} {
+    return {
+      formData: {},
+    };
+  },
+  watch: {
+    fields: {
+      immediate: true,
+      deep: true,
+      handler(fields: {[key: string]: any}) {
+        for (const [key, field] of Object.entries(fields)) {
+          if (field.value !== undefined) {
+            if (field.input_type == 'combo') {
+              this.formData[key] = field.value;
             } else {
-              this.formData[key] = null;
+              this.formData[key] = field.value;
             }
+          } else {
+            this.formData[key] = null;
           }
         }
-      }
-    },
-    methods: {
-      submit() {
-        this.$emit('submit', this.id, this.formData);
       },
-      discard() {
-        for (const key of Object.keys(this.fields)) {
-          this.formData[key] = null;
-        }
-        this.$emit('update:visible', false);
-        this.$emit('cancel');
+    },
+  },
+  methods: {
+    submit(): void {
+      this.$emit('submit', this.id, this.formData);
+    },
+    discard(): void {
+      for (const key of Object.keys(this.fields)) {
+        this.formData[key] = null;
       }
-    }
-  };
-  </script>
-  
+      this.$emit('update:visible', false);
+      this.$emit('cancel');
+    },
+  },
+};
+</script>  
   <style scoped>
   .dynamic-form {
   }
