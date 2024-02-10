@@ -18,10 +18,11 @@ export default defineConfig({
     }),
   ],
   // TODO: Если всё работает, удалить.
-  define: {
-    'process.env': {},
-    'import.meta.env.VITE_BACKEND_URL': JSON.stringify(process.env.VITE_BACKEND_URL),
-  },
+  // С этим кодом не работает import.meta.env...
+  // define: {
+  //   'process.env': {},
+  //   'import.meta.env.VITE_BACKEND_URL': JSON.stringify(process.env.VITE_BACKEND_URL),
+  // },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
