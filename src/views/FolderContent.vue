@@ -1,4 +1,9 @@
 <template>
+  <div class="header">
+    <div>Сервер:</div>
+    <div>Хранилище: {{ storage_name }}</div>
+    <div>Папка {{ folder_name }}</div>
+  </div>
   <div class="folder-container">
     <div class="folder-card" v-for="folder in folders" :key="folder.storage_id">
       <FolderCardComponent :folder="folder" />
@@ -33,6 +38,8 @@ export default defineComponent({
     const files = ref<FileObject[]>([]);
     const folder_data = ref<ParametersFolderView>()
     const route = useRoute();
+    const storage_name = ref()
+    const folder_name = ref()
 
     const refresh = async (params?: ParametersFolderView) => {
       files.value = []
@@ -48,6 +55,8 @@ export default defineComponent({
         console.log("Content response:");
         console.log(response);
         if (response.data) {
+          storage_name.value = response.data.results.storage_name
+          folder_name.value = response.data.results.path
           files.value = response.data.results.files
           // folders.value = response.data.results.folders;
           // 2 варианта img src:
@@ -112,16 +121,29 @@ export default defineComponent({
       files,
       loadCollage,
       folder_data,
+      storage_name,
+      folder_name,
     };
   },
 });
 </script>
 
 <style scoped>
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em;
+  background-color: #f7f7f7;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 1em;
+}
+
 .folder-container {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
+  justify-content: flex-start;
+  padding: 0 1em;
 }
 .folder-card {
   display: flex;
@@ -130,8 +152,8 @@ export default defineComponent({
   justify-content: space-around;
   width: 100%;
   max-width: 300px;
-  padding: 0;
-  margin: 1em;
+  padding: 1em;
+  margin: 1em 0.5em;
   border: 1px solid #eee;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -141,13 +163,13 @@ export default defineComponent({
 
 @media screen and (min-width: 800px) {
   .folder-card {
-    max-width: calc((100% - 4em) / 2);
+    max-width: calc((100% - 4em - 2em) / 2);
   }
 }
 
 @media screen and (min-width: 1000px) {
   .folder-card {
-    max-width: calc((100% - 6em) / 3);
+    max-width: calc((100% - 6em - 3em) / 3);
   }
 }
 </style>

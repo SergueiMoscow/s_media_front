@@ -11,7 +11,7 @@ export function useServers() {
     const token = localStorage.getItem("access_token");
     const headers = { Authorization: `Bearer ${token}` };
     try {
-      const response = await apiClient.get('/servers/', { headers });
+      const response = await apiClient.get(`/servers/`, { headers });
       servers.value = response.data.results;
     } catch (error) {
       console.error("Ошибка при получении серверов:", error);
@@ -23,7 +23,7 @@ export function useServers() {
     const headers = { Authorization: `Bearer ${token}` };
 
     try {
-      const response = await apiClient.get(`${server.url}/storages/`, { headers });
+      const response = await apiClient.get(`/storages/?server_id=${server.id}`, { headers });
       currentServer.value = parseInt(server.id)
       storages.value = response.data.results;
     } catch (error) {
