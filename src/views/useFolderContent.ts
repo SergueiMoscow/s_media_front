@@ -39,6 +39,7 @@ export const arrayBufferToBase64 = (buffer: any) => {
 
 
 export const processFolder = async (folder: Folder, params: any) => {
+    folder.path = params.folder_path + '/' + folder.name
     let serverId;
     if (folder.server_id != null) { // Проверяем, существует ли server_id в объекте folder
         serverId = folder.server_id.toString();
@@ -61,7 +62,7 @@ export const processFolder = async (folder: Folder, params: any) => {
     const collageBytesArray = await loadCollage(
         serverId,
         storageId,
-        folder.name
+        folder.path
     );
     const collageImage = arrayBufferToBase64(collageBytesArray);
     const collageUrl = `data:image/jpeg;base64,${collageImage}`;
@@ -71,6 +72,6 @@ export const processFolder = async (folder: Folder, params: any) => {
         image_url: `${import.meta.env.VITE_BACKEND_URL
             }/folders_image?folders=${folder.folders_count.direct
             }&timestamp=${new Date().getTime()}&rand=${Math.random()}`,
-        collage_url: collageUrl, // Здесь вы будете использовать полученный URL в качестве значения
+        collage_url: collageUrl,
     };
 }

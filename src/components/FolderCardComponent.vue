@@ -54,7 +54,7 @@ export default defineComponent({
         params: {
           server: folder.server_id,
           storage: folder.storage_id,
-          folder: folder.name,
+          folder_path: folder.path,
         },
       });
     };
@@ -68,7 +68,7 @@ export default defineComponent({
 .folder-card {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   width: 100%;
   max-width: 300px;

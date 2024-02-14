@@ -29,7 +29,7 @@ const routes = [
   },  
   {
     name: 'FolderContent',
-    path: '/folder_content/:server?/:storage?/:folder?',
+    path: '/folder_content/:server?/:storage?/:folder_path?',
     component: () => import('@/views/FolderContent.vue'),
     props: true,
     meta: { key: (route: RouteLocationNormalizedLoaded) => route.fullPath },

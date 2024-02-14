@@ -48,7 +48,7 @@ export default defineComponent({
         const response =
           params && params.server
             ? await apiClient.get(
-                `/storage/${params.server}/${params.storage}/?folder=${params.folder}`
+                `/storage/${params.server}/${params.storage}/?folder=${params.folder_path}`
               )
             : await apiClient.get("/servers_content/");
             folder_data.value = params
@@ -76,7 +76,7 @@ export default defineComponent({
                     import.meta.env.VITE_BACKEND_URL
                   }/folder_collage/${folder.server_id}/${
                     folder.storage_id
-                  }/?folder=&timestamp=${new Date().getTime()}&rand=${Math.random()}`,
+                  }/?folder=${params?.folder_path}/${folder.name}&timestamp=${new Date().getTime()}&rand=${Math.random()}`,
                 };
               }
             );
@@ -101,7 +101,8 @@ export default defineComponent({
       const params: ParametersFolderView = {
         server: route.params.server?.toString() || "",
         storage: route.params.storage?.toString() || "",
-        folder: route.params.folder?.toString() || "",
+        // folder_name: route.params.folder_name?.toString() || "",
+        folder_path: route.params.folder_path?.toString() || "",
       };
       console.log("onMounted FolderContent");
       refresh(params);

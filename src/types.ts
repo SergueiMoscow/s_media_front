@@ -41,7 +41,7 @@ export interface Folder {
 export interface ParametersFolderView {
   server: string;
   storage: string;
-  folder: string;
+  folder_path: string;
 }
 
 export interface FileObject {
@@ -52,4 +52,9 @@ export interface FileObject {
   created: string;
   group: string;
   image_url: string;
+  selected: boolean; // выделение для групповых операций
+  // values from db
+  note: string;
+  tags: Array<string>;
+  emoji: Array<Object>;
 }

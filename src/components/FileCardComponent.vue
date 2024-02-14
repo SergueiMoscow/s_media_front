@@ -32,7 +32,7 @@ export default defineComponent({
     imageUrl.value = `${import.meta.env.VITE_BACKEND_URL}/preview/${
       props.folder_data?.server
     }/${props.folder_data?.storage}/?folder=${encodeURIComponent(
-      props.folder_data?.folder ? props.folder_data.folder : ""
+      props.folder_data?.folder_path ? props.folder_data.folder_path : ""
     )}&filename=${props.file.name}`;
     const formatSize = (size: number) => {
       // Пример простейшего форматера размера файла
