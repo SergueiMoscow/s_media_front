@@ -1,11 +1,12 @@
 <template>
   <div class="file-card">
+    <input type="checkbox" class="file-card__checkbox" />
     <img :src="imageUrl" text="true" @click="fetchImage" class="file-card__img" />
     <div class="file-card__details">
       <div class="file-card__title">{{ file.name }}</div>
       <div class="file-card__info">
-        {{ file.type }} - {{ formatSize(file.size) }}
-        <span class="file-card__info--subtext">{{ file.created }}</span>
+        <span>{{ file.type }} - {{ formatSize(file.size) }}</span>
+        <span class="file-card__info--subtext">{{ file_created }}</span>
       </div>
     </div>
   </div>
@@ -14,6 +15,7 @@
 <script lang="ts">
 import { defineComponent, PropType, ref } from "vue";
 import { FileObject, ParametersFolderView } from "@/types";
+import {formatDate }from '@/common'
 
 export default defineComponent({
   name: "FileCardComponent",
@@ -39,8 +41,8 @@ export default defineComponent({
       return (size / 1024).toFixed(2) + " KB";
     };
     const fetchImage = () => {};
-
-    return { fetchImage, formatSize, imageUrl };
+    const file_created = formatDate(props.file.created)
+    return { fetchImage, formatSize, imageUrl, file_created };
   },
 });
 </script>
@@ -61,6 +63,27 @@ export default defineComponent({
   background-color: #fff;
   transition: box-shadow 0.3s ease;
 }
+
+.file-card__title {
+   text-align: center;
+   color: #333;
+}
+
+.file-card__details {
+  width: 100%;
+}
+
+.file-card__info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.file-card__info--created {
+  font-size: 0.8rem;
+}
+
 
 .file-card__img {
   /* стили для изображения */

@@ -68,19 +68,13 @@ export default defineComponent({
 .folder-card {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 300px;
+  align-items: stretch;
   padding: 1em;
-  margin: 1em;
   border: 1px solid #eee;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   background-color: #fff;
-  transition: box-shadow 0.3s ease;
 }
-
 .folder-card__details {
   margin: 1em 0;
 }
