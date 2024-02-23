@@ -14,6 +14,7 @@
       <FileCardComponent
         :file="file"
         :folder_data="folder_data"
+        :all_tags="available_tags"
         />
     </div>
   </div>
@@ -40,6 +41,7 @@ export default defineComponent({
     const route = useRoute();
     const storage_name = ref()
     const folder_name = ref()
+    const available_tags=ref()
 
     const refresh = async (params?: ParametersFolderView) => {
       files.value = []
@@ -91,6 +93,16 @@ export default defineComponent({
             // Используем Promise.all для ожидания завершения всех асинхронных операций
             folders.value = await Promise.all(folderPromises);
           }
+          // tags
+          
+        
+          if (params?.server) {
+            const response_tags = await apiClient.get(`/catalog/tags/${params?.server}/`)
+            available_tags.value = response_tags?.data.results
+          }
+          else {
+            available_tags.value = []
+          }
         }
       } catch (error) {
         console.error(error);
@@ -124,6 +136,7 @@ export default defineComponent({
       folder_data,
       storage_name,
       folder_name,
+      available_tags,
     };
   },
 });

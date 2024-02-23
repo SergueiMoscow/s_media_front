@@ -4,6 +4,19 @@
     <img :src="imageUrl" text="true" @click="fetchImage" class="file-card__img" />
     <div class="file-card__details">
       <div class="file-card__title">{{ file.name }}</div>
+      <div>
+        <Multiselect
+          v-model="tags_value"
+          :options="all_tags"
+          mode="tags"
+          placeholder="Select your characters"
+          :searchable="true"
+          :createTag="true"
+          :caret="false"
+          @update:modelValue="handleTagChange"
+          @select="tagSelect"
+          />
+      </div>
       <div class="file-card__info">
         <span>{{ file.type }} - {{ formatSize(file.size) }}</span>
         <span class="file-card__info--subtext">{{ file_created }}</span>
@@ -16,9 +29,16 @@
 import { defineComponent, PropType, ref } from "vue";
 import { FileObject, ParametersFolderView } from "@/types";
 import {formatDate }from '@/common'
+//@ts-ignore
+import Multiselect from '@vueform/multiselect'
+import apiClient from "@/apiClient";
+
 
 export default defineComponent({
   name: "FileCardComponent",
+  components: {
+    Multiselect,
+  },
   props: {
     file: {
       type: Object as PropType<FileObject>,
@@ -28,6 +48,7 @@ export default defineComponent({
       type: Object as PropType<ParametersFolderView>,
       required: true,
     },
+    all_tags: Array<string>,
   },
   setup(props) {
     const imageUrl = ref("");
@@ -42,10 +63,29 @@ export default defineComponent({
     };
     const fetchImage = () => {};
     const file_created = formatDate(props.file.created)
-    return { fetchImage, formatSize, imageUrl, file_created };
+    const tags_value = props.file.tags;
+    const handleTagChange = async (newVal: any) => {
+        console.log(newVal);
+        // запрос на бэкенд
+        await apiClient.post(`/storage/fileinfo/${
+          props.folder_data.server
+        }/${
+          props.folder_data.storage}/`,
+          {
+            folder_path: props.folder_data.folder_path,
+            filename:props.file.name,
+            tags: newVal,
+          }
+        )
+    }
+    const tagSelect = (value: any) => {
+      console.log(value);
+    }
+    return { fetchImage, formatSize, imageUrl, file_created, tags_value, handleTagChange, tagSelect };
   },
 });
 </script>
+<style src="@vueform/multiselect/themes/default.css"></style>
 
 <style scoped>
 .file-card {
