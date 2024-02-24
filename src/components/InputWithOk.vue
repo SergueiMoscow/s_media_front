@@ -6,10 +6,10 @@
       :placeholder="placeholder"
       @focus="editMode"
     />
-    <v-icon v-if="showButtons" @click="saveChanges" class="px-1 success--text">
+    <v-icon small v-if="showButtons" color="green" @click="saveChanges">
       mdi-check-circle
     </v-icon>
-    <v-icon v-if="showButtons" @click="cancelChanges" class="px-1 error--text">
+    <v-icon v-if="showButtons" color="red" @click="cancelChanges" class="px-1 error--text">
       mdi-close-circle
     </v-icon>
   </div>
