@@ -25,7 +25,7 @@
           />
       </div>
       <div>
-        <input type="checkbox" class="file-card__checkbox" v-model="is_public"/> public
+        <input type="checkbox" class="file-card__checkbox" v-model="is_public" @change="onChangePublic"/> public
       </div>
       <div class="file-card__info">
         <span>{{ file.type }} - {{ formatSize(file.size) }}</span>
@@ -106,7 +106,21 @@ export default defineComponent({
         )
         note = newVal
     }
-    return { fetchImage, formatSize, imageUrl, file_created, tags_value, handleTagChange, tagSelect, note, is_public, handleNoteSave };
+    const onChangePublic = async (event: any) => {
+      await apiClient.post(`/storage/fileinfo/${
+          props.folder_data.server
+        }/${
+          props.folder_data.storage}/`,
+          {
+            folder_path: props.folder_data.folder_path,
+            filename:props.file.name,
+            is_public: event.target.checked,
+          }
+        )
+      console.log(`changePublic: ${event.target.checked}`)
+
+    }
+    return { fetchImage, formatSize, imageUrl, file_created, tags_value, handleTagChange, tagSelect, note, is_public, handleNoteSave, onChangePublic };
   },
 });
 </script>
