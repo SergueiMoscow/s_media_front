@@ -3,6 +3,13 @@
     <input type="checkbox" class="file-card__checkbox" />
     <img :src="imageUrl" text="true" @click="fetchImage" class="file-card__img" />
     <div class="file-card__details">
+      <div class="file-card__title">
+        <EditableComponent
+          v-model="note"
+          @update:modelValue="handleNoteSave"
+          placeholder="Заметки"
+          />
+      </div>
       <div class="file-card__title">{{ file.name }}</div>
       <div>
         <Multiselect
@@ -16,6 +23,9 @@
           @update:modelValue="handleTagChange"
           @select="tagSelect"
           />
+      </div>
+      <div>
+        <input type="checkbox" class="file-card__checkbox" v-model="is_public"/> public
       </div>
       <div class="file-card__info">
         <span>{{ file.type }} - {{ formatSize(file.size) }}</span>
@@ -32,12 +42,14 @@ import {formatDate }from '@/common'
 //@ts-ignore
 import Multiselect from '@vueform/multiselect'
 import apiClient from "@/apiClient";
+import EditableComponent from "@/components/InputWithOk.vue"
 
 
 export default defineComponent({
   name: "FileCardComponent",
   components: {
     Multiselect,
+    EditableComponent,
   },
   props: {
     file: {
@@ -64,9 +76,9 @@ export default defineComponent({
     const fetchImage = () => {};
     const file_created = formatDate(props.file.created)
     const tags_value = props.file.tags;
+    const is_public = props.file.is_public;
+    let note = props.file.note;
     const handleTagChange = async (newVal: any) => {
-        console.log(newVal);
-        // запрос на бэкенд
         await apiClient.post(`/storage/fileinfo/${
           props.folder_data.server
         }/${
@@ -81,7 +93,20 @@ export default defineComponent({
     const tagSelect = (value: any) => {
       console.log(value);
     }
-    return { fetchImage, formatSize, imageUrl, file_created, tags_value, handleTagChange, tagSelect };
+    const handleNoteSave = async (newVal: string) => {
+      await apiClient.post(`/storage/fileinfo/${
+          props.folder_data.server
+        }/${
+          props.folder_data.storage}/`,
+          {
+            folder_path: props.folder_data.folder_path,
+            filename:props.file.name,
+            note: newVal,
+          }
+        )
+        note = newVal
+    }
+    return { fetchImage, formatSize, imageUrl, file_created, tags_value, handleTagChange, tagSelect, note, is_public, handleNoteSave };
   },
 });
 </script>

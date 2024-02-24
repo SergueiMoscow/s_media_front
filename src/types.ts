@@ -55,6 +55,7 @@ export interface FileObject {
   selected: boolean; // выделение для групповых операций
   // values from db
   note: string;
+  is_public: boolean;
   tags: Array<string>;
   emoji: Array<Object>;
 }
