@@ -5,13 +5,16 @@
       <p class="description">Содержится из трех приложений:</p>
       <ol class="app-list">
           <li class="app-item"><b>s_media_front:</b> frontend для пользователей, разработанный на Vue.js 3. Отправляет API-запросы на bakend и отображает полученные ответы.<br />
-            <a href="https://github.com/SergeyMoscow/s_media_front">Репозиторий на GitHub</a>
+            <a href="https://github.com/SergueiMoscow/s_media_front" target="_blank">Репозиторий на GitHub</a>
           </li>
           <li class="app-item"><b>s_media_api:</b> Backend часть, работает на Python и Django DRF. Он обрабатывает API-запросы от frontend, решает, к какому серверу следует обратить запрос, и перенаправляет его туда.<br />
-            <a href="https://github.com/SergeyMoscow/s_media_api">Репозиторий на GitHub</a>
+            <a href="https://github.com/SergueiMoscow/s_media_api" target="_blank">Репозиторий на GitHub</a>
           </li>
           <li class="app-item"><b>Media Cataloger:</b> Принимает и обрабатывает запросы от backend. Обеспечивает доступ к папкам и файлам, а также предоставляет информацию о файлах.<br />
-            <a href="https://github.com/SergeyMoscow/s_media_service">Репозиторий на GitHub</a>
+            <a href="https://github.com/SergueiMoscow/s_media_service" target="_blank">Репозиторий на GitHub</a>
+          </li>
+          <li class="app-item"><b>Помощник деплоя</b>Ansible playbooks для установки компонентов системы<br />
+            <a href="https://github.com/SergueiMoscow/s_media_deploy" target="_blank">Репозиторий на GitHub</a>
           </li>
       </ol>
       <img src="s_media_schema.png" />
