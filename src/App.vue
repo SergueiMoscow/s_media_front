@@ -81,13 +81,13 @@ let navigation_items = [
     path: "/",
     requiresAuth: false,
   },
-  {
-    title: 'Процессы',
-    value: 'processes',
-    icon: "mdi-fast-forward",
-    path: "/processes",
-    requiresAuth: false,
-  },
+  // {
+  //   title: 'Процессы',
+  //   value: 'processes',
+  //   icon: "mdi-fast-forward",
+  //   path: "/processes",
+  //   requiresAuth: false,
+  // },
   {
     title: 'Хранилища',
     value: 'content',
@@ -101,6 +101,13 @@ let navigation_items = [
     icon: "mdi-server",
     path: "/storages",
     requiresAuth: true,
+  },
+  {
+    title: 'О системе',
+    value: 'about',
+    icon: "mdi-information-variant",
+    path: "/about",
+    requiresAuth: false,
   }
 ]
 </script>

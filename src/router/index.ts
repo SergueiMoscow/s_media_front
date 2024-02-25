@@ -4,15 +4,15 @@ import { RouteLocationNormalizedLoaded, createRouter, createWebHistory } from 'v
 const routes = [
   {
     path: '/',
-    component: () => import('@/layouts/default/Default.vue'),
+    component: () => import('@/views/Home.vue'),
   },
+  // {
+  //   path: '/processes',
+  //   component: () => import('@/components/CComponentTableProcesses.vue'),
+  // },
   {
-    path: '/processes',
-    component: () => import('@/components/CComponentTableProcesses.vue'),
-  },
-  {
-    path: '/hello_world',
-    component: () => import('@/components/HelloWorld.vue'),
+    path: '/about',
+    component: () => import('@/views/Description.vue'),
   },
   {
     path: '/login',
