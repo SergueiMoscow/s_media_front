@@ -21,7 +21,7 @@
             :src="folder.collage_url"
             class="folder-card__img"
             alt="file"
-            @click="navigateToFolder(folder)"
+            @click="folderClickHandler(folder.server_id, folder.storage_id, folder.path)"
           />
         </div>
         Файлов: {{ folder.files_count.direct }}
@@ -36,7 +36,8 @@
 <script lang="ts">
 import { Folder } from "@/types";
 import { defineComponent } from "vue";
-import { useRouter } from "vue-router";
+// import { useRouter } from "vue-router";
+import { navigateToFolder } from "@/views/useNavigation"
 
 export default defineComponent({
   props: {
@@ -45,21 +46,13 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props) {
-    const router = useRouter();
+  setup() {
 
-    const  navigateToFolder = (folder: Folder) => {
-      router.push({
-        name: "FolderContent",
-        params: {
-          server: folder.server_id,
-          storage: folder.storage_id,
-          folder_path: folder.path,
-        },
-      });
+    const  folderClickHandler = (server_id: number, storage_id: string, folder_path: string) => {
+      navigateToFolder(server_id, storage_id, folder_path) 
     };
 
-    return { navigateToFolder }
+    return { folderClickHandler }
   },
 });
 </script>

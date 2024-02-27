@@ -2,7 +2,12 @@
   <div class="header">
     <div>Сервер:</div>
     <div>Хранилище: {{ storage_name }}</div>
-    <div>Папка {{ folder_name }}</div>
+    <!--div>Папка {{ folder_name }}</div -->
+    <FolderPathComponent
+      :server_id="server_id"
+      :storage_id="storage_id"
+      :folder_path="folder_path"
+    />
   </div>
   <div class="folder-container">
     <div class="folder-card" v-for="folder in folders" :key="folder.storage_id">
@@ -23,6 +28,8 @@
 <script lang="ts">
 import { defineComponent, onMounted, watch, ref } from "vue";
 import FolderCardComponent from "@/components/FolderCardComponent.vue";
+import FolderPathComponent from "@/components/FolderPathComponent.vue";
+
 import FileCardComponent from "@/components/FileCardComponent.vue";
 import apiClient from "@/apiClient";
 import { Folder, ParametersFolderView, FileObject } from "@/types";
@@ -31,6 +38,7 @@ import { loadCollage, processFolder } from "@/views/useFolderContent";
 
 export default defineComponent({
   components: {
+    FolderPathComponent,
     FolderCardComponent,
     FileCardComponent,
   },
@@ -42,11 +50,17 @@ export default defineComponent({
     const storage_name = ref()
     const folder_name = ref()
     const available_tags=ref()
+    const server_id=ref()
+    const storage_id=ref()
+    const folder_path = ref()
 
     const refresh = async (params?: ParametersFolderView) => {
       files.value = []
       folders.value = []
       try {
+        server_id.value = params?.server
+        storage_id.value = params?.storage
+        folder_path.value=params?.folder_path
         const response =
           params && params.server
             ? await apiClient.get(
@@ -137,6 +151,9 @@ export default defineComponent({
       storage_name,
       folder_name,
       available_tags,
+      server_id,
+      storage_id,
+      folder_path,
     };
   },
 });
