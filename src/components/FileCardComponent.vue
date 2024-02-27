@@ -167,7 +167,7 @@ export default defineComponent({
 .file-card__img {
   /* стили для изображения */
   max-width: 100%;
-  aspect-ratio: 16 / 9;
+  /* aspect-ratio: 16 / 9; */
   margin: 0.5em 0;
   cursor: pointer;
 }
