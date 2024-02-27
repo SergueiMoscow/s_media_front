@@ -1,4 +1,5 @@
 import axios from 'axios';
+import router from './router';
 
 // Инициализируем инстанс Axios
 const apiClient = axios.create({
@@ -36,6 +37,9 @@ apiClient.interceptors.response.use(response => {
       return apiClient.request(error.config);
     } catch (e) {
       console.error('Не удалось обновить токен:', e);
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      router.push('/login');
     }
   }
 

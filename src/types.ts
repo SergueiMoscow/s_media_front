@@ -45,6 +45,7 @@ export interface ParametersFolderView {
 }
 
 export interface FileObject {
+  // for file direct (without catalog)
   name: string;
   type: string;
   full_path: string;
@@ -58,4 +59,19 @@ export interface FileObject {
   is_public: boolean;
   tags: Array<string>;
   emoji: Array<Object>;
+}
+
+
+export interface CatalogObject {
+  // for file from catalog table
+  id: string,
+  server_id: string,
+  note: string;
+  size: number;
+  type: string;
+  tags: Array<string>;
+  emoji: Array<Object>;
+  created_at: string;
+  // group: string;
+  // is_public: boolean;
 }
