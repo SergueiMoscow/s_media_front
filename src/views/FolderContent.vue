@@ -15,13 +15,15 @@
     </div>
   </div>
   <div class="folder-container">
-    <div class="folder-card" v-for="file in files" :key="file.name">
+    <!-- <div class="folder-card" v-for="file in files" :key="file.name"> -->
       <FileCardComponent
+        v-for="file in files"
+        :key="file.name"
         :file="file"
         :folder_data="folder_data"
         :all_tags="available_tags"
         />
-    </div>
+    <!-- </div> -->
   </div>
 </template>
 
@@ -180,6 +182,10 @@ export default defineComponent({
 .folder-card {
   margin: 1em 0.5em;
   transition: box-shadow 0.3s ease;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
 }
 
 @media screen and (max-width: 600px) {

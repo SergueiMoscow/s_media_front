@@ -2,11 +2,13 @@
   <div class="main">
     <h1 class="title">Каталогизатор систем хранения изображений.</h1>
     <div class="folder-container">
-    <div class="folder-card" v-for="file in files" :key="file.note">
+    <!-- <div class="folder-card" v-for="file in files" :key="file.note"> -->
       <FileViewComponent
+        v-for="file in files"
+        :key="file.note"
         :file="file"
         />
-    </div>
+    <!-- </div> -->
   </div>
 
 </div>

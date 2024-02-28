@@ -163,8 +163,8 @@ function updateServerList(): Option[] {
 }
 
 function showAddStorageForm() {
-  storageForm.fields.name.value = 'a'
-  storageForm.fields.path.value = 'b'
+  storageForm.fields.name.value = ''
+  storageForm.fields.path.value = ''
   storageForm.fields.server_id.values_list = updateServerList()
   storageForm.title = `Добавить хранилище`
   storageForm.id = '';
