@@ -85,8 +85,8 @@ export default defineComponent({
         if (response.data) {
           storage_name.value = response.data.results.storage_name;
           folder_name.value = response.data.results.path;
-          files.value = response.data.results.files;
-          currentPage.value = response.data.pagination.page
+          files.value = response.data.results?.files || [] ;
+          currentPage.value = response.data.pagination?.page || 1
 
           const folderPromises = response.data.results.folders.map(
             async (folder: Folder) => {
