@@ -31,7 +31,7 @@ export interface Folder {
   storage_id: string;
   storage_name: string;
   path: string;
-  server_id: number;
+  server_id: string;
   server_name: string;
   server_url: string;
   image_url: string;
@@ -42,6 +42,7 @@ export interface ParametersFolderView {
   server: string;
   storage: string;
   folder_path: string;
+  page: number;
 }
 
 export interface FileObject {

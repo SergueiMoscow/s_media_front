@@ -15,16 +15,20 @@
     </div>
   </div>
   <div class="folder-container">
-    <!-- <div class="folder-card" v-for="file in files" :key="file.name"> -->
-      <FileCardComponent
-        v-for="file in files"
-        :key="file.name"
-        :file="file"
-        :folder_data="folder_data"
-        :all_tags="available_tags"
-        />
-    <!-- </div> -->
+    <FileCardComponent
+      v-for="file in files"
+      :key="file.name"
+      :file="file"
+      :folder_data="folder_data"
+      :all_tags="available_tags"
+    />
   </div>
+  <Pagination 
+    v-model="currentPage"
+    :total="totalItems"
+    :limit=20
+    @update:modelValue="onChangePageHandler"
+  />
 </template>
 
 <script lang="ts">
@@ -37,112 +41,115 @@ import apiClient from "@/apiClient";
 import { Folder, ParametersFolderView, FileObject } from "@/types";
 import { useRoute } from "vue-router";
 import { loadCollage, processFolder } from "@/views/useFolderContent";
+import { navigateToFolder } from "./useNavigation";
+import Pagination from "@/components/Pagination.vue"
 
 export default defineComponent({
+  name: "FolderContent",
   components: {
     FolderPathComponent,
     FolderCardComponent,
     FileCardComponent,
+    Pagination,
   },
   setup() {
     const folders = ref<Folder[]>([]);
     const files = ref<FileObject[]>([]);
-    const folder_data = ref<ParametersFolderView>()
+    const folder_data = ref<ParametersFolderView>();
     const route = useRoute();
-    const storage_name = ref()
-    const folder_name = ref()
-    const available_tags=ref()
-    const server_id=ref()
-    const storage_id=ref()
-    const folder_path = ref()
+    const storage_name = ref();
+    const folder_name = ref();
+    const available_tags = ref();
+    const server_id = ref();
+    const storage_id = ref();
+    const folder_path = ref();
+    const currentPage = ref();
+    const totalItems = ref(0);
 
     const refresh = async (params?: ParametersFolderView) => {
-      files.value = []
-      folders.value = []
+      files.value = [];
+      folders.value = [];
+      const page = route.query.page ? Number(route.query.page) : 1
       try {
-        server_id.value = params?.server
-        storage_id.value = params?.storage
-        folder_path.value=params?.folder_path
-        const response =
-          params && params.server
-            ? await apiClient.get(
-                `/storage/${params.server}/${params.storage}/?folder=${params.folder_path}`
-              )
-            : await apiClient.get("/servers_content/");
-            folder_data.value = params
+        server_id.value = params?.server;
+        storage_id.value = params?.storage;
+        folder_path.value = params?.folder_path;
+        const url = params && params.server ? 
+          `/storage/${params.server}/${params.storage}/?folder=${params.folder_path}&page=${page}` 
+          : "/servers_content/"
+        console.log(`Fetching ${url}`)
+        const response = await apiClient.get(url)
+        folder_data.value = params;
         console.log("Content response:");
         console.log(response);
         if (response.data) {
-          storage_name.value = response.data.results.storage_name
-          folder_name.value = response.data.results.path
-          files.value = response.data.results.files
-          // folders.value = response.data.results.folders;
-          // 2 варианта img src:
-          let imageSourceType = "js_func";
-          if (imageSourceType == "direct") {
-            // вариант img src='ссылка'. Так не добавляется header с токеном
-            folders.value = response.data.results.folders.map(
-              (folder: Folder) => {
-                return {
-                  ...folder,
-                  image_url: `${
-                    import.meta.env.VITE_BACKEND_URL
-                  }/folders_image?folders=${
-                    folder.folders_count.direct
-                  }&timestamp=${new Date().getTime()}&rand=${Math.random()}`,
-                  collage_url: `${
-                    import.meta.env.VITE_BACKEND_URL
-                  }/folder_collage/${folder.server_id}/${
-                    folder.storage_id
-                  }/?folder=${params?.folder_path}/${folder.name}&timestamp=${new Date().getTime()}&rand=${Math.random()}`,
-                };
-              }
-            );
-          } else if (imageSourceType == "js_func") {
-            // вариант img src='загруженная картинка'. Получаем её отдельным запросом
-            const folderPromises = response.data.results.folders.map(
-              async (folder: Folder) => {
-                return await processFolder(folder, params);
-              }
-            );
+          storage_name.value = response.data.results.storage_name;
+          folder_name.value = response.data.results.path;
+          files.value = response.data.results.files;
+          currentPage.value = response.data.pagination.page
 
-            // Используем Promise.all для ожидания завершения всех асинхронных операций
-            folders.value = await Promise.all(folderPromises);
-          }
-          // tags
-          
-        
-          if (params?.server) {
-            const response_tags = await apiClient.get(`/catalog/tags/${params?.server}/`)
-            available_tags.value = response_tags?.data.results
-          }
-          else {
-            available_tags.value = []
-          }
+          const folderPromises = response.data.results.folders.map(
+            async (folder: Folder) => {
+              return await processFolder(folder, params);
+            }
+          );
+
+          // Используем Promise.all для ожидания завершения всех асинхронных операций
+          folders.value = await Promise.all(folderPromises);
+        }
+        // tags
+
+        if (params?.server) {
+          const response_tags = await apiClient.get(
+            `/catalog/tags/${params?.server}/`
+          );
+          available_tags.value = response_tags?.data.results;
+        } else {
+          available_tags.value = [];
+        }
+        // pagination
+        if (response.data.pagination) {
+          currentPage.value = response.data.pagination.page;
+          totalItems.value = response.data.pagination.items;
         }
       } catch (error) {
         console.error(error);
       }
     };
 
+    const onChangePageHandler = async (page: number) => {
+      console.log(`Page: ${page}`);
+      currentPage.value = page;
+      navigateToFolder(
+        server_id.value,
+        storage_id.value,
+        folder_path.value,
+        currentPage.value
+      );
+    };
+
     onMounted(async () => {
       const params: ParametersFolderView = {
         server: route.params.server?.toString() || "",
         storage: route.params.storage?.toString() || "",
-        // folder_name: route.params.folder_name?.toString() || "",
         folder_path: route.params.folder_path?.toString() || "",
+        page: route.query.page ? Number(route.query.page) : 1,
       };
-      console.log("onMounted FolderContent");
-      refresh(params);
+      console.log("onMounted FolderContent", params);
+      console.log("currentPageValue before", currentPage.value);
+      currentPage.value = params.page;
+      await refresh(params);
+      console.log("currentPageValue after", currentPage.value);
     });
 
     watch(
       () => route.params,
-      (newParams) => {
-        // Логика обновления, аналогично в том, что должно произойти при onMounted
-        refresh(newParams as unknown as ParametersFolderView);
-      },
-      { immediate: true }
+      async () => refresh(route.params as unknown as ParametersFolderView),
+
+      // (newParams) => {
+      //   refresh(newParams as unknown as ParametersFolderView);
+      // },
+      // { immediate: true }
     );
 
     return {
@@ -156,6 +163,9 @@ export default defineComponent({
       server_id,
       storage_id,
       folder_path,
+      currentPage,
+      onChangePageHandler,
+      totalItems,
     };
   },
 });
@@ -185,7 +195,6 @@ export default defineComponent({
   border: 1px solid #eee;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-
 }
 
 @media screen and (max-width: 600px) {

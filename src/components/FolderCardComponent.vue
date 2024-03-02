@@ -21,7 +21,7 @@
             :src="folder.collage_url"
             class="folder-card__img"
             alt="file"
-            @click="folderClickHandler(folder.server_id, folder.storage_id, folder.path)"
+            @click="folderClickHandler(folder.server_id.toString(), folder.storage_id, folder.path)"
           />
         </div>
         Файлов: {{ folder.files_count.direct }}
@@ -48,8 +48,8 @@ export default defineComponent({
   },
   setup() {
 
-    const  folderClickHandler = (server_id: number, storage_id: string, folder_path: string) => {
-      navigateToFolder(server_id, storage_id, folder_path) 
+    const  folderClickHandler = (server_id: string, storage_id: string, folder_path: string) => {
+      navigateToFolder(server_id, storage_id, folder_path, 1) 
     };
 
     return { folderClickHandler }

@@ -22,7 +22,7 @@ import { defineComponent, PropType, computed } from 'vue';
   
     props: {
       server_id: {
-        type: Number as PropType<number>,
+        type: String as PropType<string>,
         required: true
       },
       storage_id: {
@@ -37,11 +37,14 @@ import { defineComponent, PropType, computed } from 'vue';
   
     setup(props) {
         const  folderClickHandler = (part_path: string) => {
-          console.log(`part_path: ${part_path}`)
+          console.log(`FolderPathComponent part_path: ${part_path}`)
       navigateToFolder(props.server_id, props.storage_id, part_path) 
     };
   
     const folderParts = computed(() => {
+      if (!props.folder_path) {
+        return []
+      }
       const parts = props.folder_path.split('/').filter(part => part.length > 0);
       return parts.map((part, index) => {
         // Fix to create a path up to the current part instead of including all parts
