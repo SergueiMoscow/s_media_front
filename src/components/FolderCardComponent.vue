@@ -8,7 +8,12 @@
       </div>
       <div class="folder-card__image">
         <div>
-          <img :src="folder.image_url" class="folder-card__img" alt="folder" />
+          <img 
+            :src="folder.image_url"
+            class="folder-card__img"
+            alt="folder"
+            @click="folderClickHandler(folder.server_id.toString(), folder.storage_id, folder.path)"
+          />
         </div>
         Папок: {{ folder.folders_count.direct }}
         <span class="folder-card__info--subtext"
