@@ -2,7 +2,7 @@
 <template>
     <v-app-bar app>
       <v-app-bar-nav-icon @click="$emit('toggle-drawer')"></v-app-bar-nav-icon>
-      <v-toolbar-title>Application</v-toolbar-title>
+      <v-toolbar-title>Media Explorer</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn v-if="!loggedIn" @click="$emit('login')">
         Войти
