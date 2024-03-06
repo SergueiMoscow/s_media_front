@@ -9,10 +9,12 @@
   },
   "dependencies": {
     "@mdi/font": "7.0.96",
+    "@videojs-player/vue": "^1.0.0",
     "@vueform/multiselect": "^2.6.6",
     "axios": "^1.2.3",
     "mitt": "^3.0.1",
     "roboto-fontface": "*",
+    "video.js": "^8.10.0",
     "vue": "^3.2.38",
     "vue-axios": "^3.5.2",
     "vue-router": "^4.0.0",

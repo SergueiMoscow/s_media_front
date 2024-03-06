@@ -1,7 +1,19 @@
 <template>
   <div class="file-card">
     <input type="checkbox" class="file-card__checkbox" />
-    <img :src="imageUrl" text="true" @click="fetchImage" class="file-card__img" />
+    <template v-if="isImage">
+      <img :src="fileUrl" text="true" @click="fetchImage" class="file-card__img" />
+    </template>
+    <template v-else-if="isVideo">
+      <video-player
+        :poster="imageUrl"
+        :src="fileUrl"
+        :width=200
+        controls
+        loop
+        :volume="0.6"
+      />
+    </template>    
     <div class="file-card__details">
       <div class="file-card__title">
         <EditableComponent
@@ -43,6 +55,8 @@ import {formatDate }from '@/common'
 import Multiselect from '@vueform/multiselect'
 import apiClient from "@/apiClient";
 import EditableComponent from "@/components/InputWithOk.vue"
+import { VideoPlayer } from '@videojs-player/vue'
+import 'video.js/dist/video-js.css'
 
 
 export default defineComponent({
@@ -50,6 +64,7 @@ export default defineComponent({
   components: {
     Multiselect,
     EditableComponent,
+    VideoPlayer,
   },
   props: {
     file: {
@@ -64,11 +79,21 @@ export default defineComponent({
   },
   setup(props) {
     const imageUrl = ref("");
+    const fileUrl = ref("");
+    const isImage = ['png', 'jpg', 'jpeg', 'bmp', 'svg', 'webp'].includes(props.file.type)
+    const isVideo = ['mp4', 'webm', 'ogv'].includes(props.file.type)
+
     imageUrl.value = `${import.meta.env.VITE_BACKEND_URL}/preview/${
       props.folder_data?.server
     }/${props.folder_data?.storage}/?folder=${encodeURIComponent(
       props.folder_data?.folder_path ? props.folder_data.folder_path : ""
     )}&filename=${props.file.name}`;
+    fileUrl.value = `${import.meta.env.VITE_BACKEND_URL}/file/${
+      props.folder_data?.server
+    }/${props.folder_data?.storage}/?folder=${encodeURIComponent(
+      props.folder_data?.folder_path ? props.folder_data.folder_path : ""
+    )}&filename=${props.file.name}`;
+
     const formatSize = (size: number) => {
       // Пример простейшего форматера размера файла
       return (size / 1024).toFixed(2) + " KB";
@@ -120,7 +145,7 @@ export default defineComponent({
       console.log(`changePublic: ${event.target.checked}`)
 
     }
-    return { fetchImage, formatSize, imageUrl, file_created, tags_value, handleTagChange, tagSelect, note, is_public, handleNoteSave, onChangePublic };
+    return { fetchImage, formatSize, imageUrl, fileUrl, file_created, tags_value, handleTagChange, tagSelect, note, is_public, handleNoteSave, onChangePublic, isImage, isVideo };
   },
 });
 </script>

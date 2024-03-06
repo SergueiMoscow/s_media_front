@@ -60,6 +60,8 @@ export interface FileObject {
   is_public: boolean;
   tags: Array<string>;
   emoji: Array<Object>;
+  user_id: string;
+  user_name: string;
 }
 
 
