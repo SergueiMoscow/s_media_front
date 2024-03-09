@@ -80,8 +80,8 @@ export default defineComponent({
   setup(props) {
     const imageUrl = ref("");
     const fileUrl = ref("");
-    const isImage = ['png', 'jpg', 'jpeg', 'bmp', 'svg', 'webp'].includes(props.file.type)
-    const isVideo = ['mp4', 'webm', 'ogv'].includes(props.file.type)
+    const isImage = ['png', 'jpg', 'jpeg', 'bmp', 'svg', 'webp'].includes(props.file.type.toLowerCase())
+    const isVideo = ['mp4', 'webm', 'ogv'].includes(props.file.type.toLowerCase())
 
     imageUrl.value = `${import.meta.env.VITE_BACKEND_URL}/preview/${
       props.folder_data?.server
