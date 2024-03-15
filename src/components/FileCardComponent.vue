@@ -2,25 +2,30 @@
   <div class="file-card">
     <input type="checkbox" class="file-card__checkbox" />
     <template v-if="isImage">
-      <img :src="fileUrl" text="true" @click="fetchImage" class="file-card__img" />
+      <img
+        :src="imageUrl"
+        text="true"
+        @click="fetchImage"
+        class="file-card__img"
+      />
     </template>
     <template v-else-if="isVideo">
       <video-player
         :poster="imageUrl"
         :src="fileUrl"
-        :width=200
+        :width="200"
         controls
         loop
         :volume="0.6"
       />
-    </template>    
+    </template>
     <div class="file-card__details">
       <div class="file-card__title">
         <EditableComponent
           v-model="note"
           @update:modelValue="handleNoteSave"
           placeholder="Заметки"
-          />
+        />
       </div>
       <div class="file-card__title">{{ file.name }}</div>
       <div>
@@ -34,10 +39,16 @@
           :caret="false"
           @update:modelValue="handleTagChange"
           @select="tagSelect"
-          />
+        />
       </div>
       <div>
-        <input type="checkbox" class="file-card__checkbox" v-model="is_public" @change="onChangePublic"/> public
+        <input
+          type="checkbox"
+          class="file-card__checkbox"
+          v-model="is_public"
+          @change="onChangePublic"
+        />
+        public
       </div>
       <div class="file-card__info">
         <span>{{ file.type }} - {{ formatSize(file.size) }}</span>
@@ -50,14 +61,13 @@
 <script lang="ts">
 import { defineComponent, PropType, ref } from "vue";
 import { FileObject, ParametersFolderView } from "@/types";
-import {formatDate }from '@/common'
+import { formatDate } from "@/common";
 //@ts-ignore
-import Multiselect from '@vueform/multiselect'
+import Multiselect from "@vueform/multiselect";
 import apiClient from "@/apiClient";
-import EditableComponent from "@/components/InputWithOk.vue"
-import { VideoPlayer } from '@videojs-player/vue'
-import 'video.js/dist/video-js.css'
-
+import EditableComponent from "@/components/InputWithOk.vue";
+import { VideoPlayer } from "@videojs-player/vue";
+import "video.js/dist/video-js.css";
 
 export default defineComponent({
   name: "FileCardComponent",
@@ -80,72 +90,142 @@ export default defineComponent({
   setup(props) {
     const imageUrl = ref("");
     const fileUrl = ref("");
-    const isImage = ['png', 'jpg', 'jpeg', 'bmp', 'svg', 'webp'].includes(props.file.type.toLowerCase())
-    const isVideo = ['mp4', 'webm', 'ogv'].includes(props.file.type.toLowerCase())
+    const isImage = ["png", "jpg", "jpeg", "bmp", "svg", "webp"].includes(
+      props.file.type.toLowerCase()
+    );
+    const isVideo = ["mp4", "webm", "ogv"].includes(
+      props.file.type.toLowerCase()
+    );
 
-    imageUrl.value = `${import.meta.env.VITE_BACKEND_URL}/preview/${
-      props.folder_data?.server
-    }/${props.folder_data?.storage}/?folder=${encodeURIComponent(
-      props.folder_data?.folder_path ? props.folder_data.folder_path : ""
-    )}&filename=${props.file.name}`;
-    fileUrl.value = `${import.meta.env.VITE_BACKEND_URL}/file/${
-      props.folder_data?.server
-    }/${props.folder_data?.storage}/?folder=${encodeURIComponent(
-      props.folder_data?.folder_path ? props.folder_data.folder_path : ""
-    )}&filename=${props.file.name}`;
+    const generateUrl = (
+      path: string,
+      folderData: ParametersFolderView,
+      file: FileObject
+    ) => {
+      let url = `${import.meta.env.VITE_BACKEND_URL}/${path}/${
+        folderData.server
+      }`;
+
+      if (file.name) {
+        url += `/${folderData.storage}/`;
+        url += `?folder=${encodeURIComponent(
+          folderData.folder_path
+        )}&filename=${file.name}`;
+      }
+
+      if (file.id) {
+        url += `/${file.id}/`;
+      }
+
+      return url;
+    };
+
+    // old url generate, changed by function generateUrl
+    // 
+    // imageUrl.value = `${import.meta.env.VITE_BACKEND_URL}/preview/${
+    //   props.folder_data?.server
+    // }/${props.folder_data?.storage}/?folder=${encodeURIComponent(
+    //   props.folder_data?.folder_path ? props.folder_data.folder_path : ""
+    // )}&filename=${props.file.name}`;
+    // fileUrl.value = `${import.meta.env.VITE_BACKEND_URL}/file/${
+    //   props.folder_data?.server
+    // }/${props.folder_data?.storage}/?folder=${encodeURIComponent(
+    //   props.folder_data?.folder_path ? props.folder_data.folder_path : ""
+    // )}&filename=${props.file.name}`;
+
+    imageUrl.value = generateUrl('preview', props.folder_data, props.file);
+    fileUrl.value = generateUrl('file', props.folder_data, props.file);
+
 
     const formatSize = (size: number) => {
-      // Пример простейшего форматера размера файла
       return (size / 1024).toFixed(2) + " KB";
     };
     const fetchImage = () => {};
-    const file_created = formatDate(props.file.created)
+    const file_created = formatDate(props.file.created_at);
     const tags_value = props.file.tags;
     const is_public = props.file.is_public;
     let note = props.file.note;
     const handleTagChange = async (newVal: any) => {
-        await apiClient.post(`/storage/fileinfo/${
-          props.folder_data.server
-        }/${
-          props.folder_data.storage}/`,
-          {
-            folder_path: props.folder_data.folder_path,
-            filename:props.file.name,
-            tags: newVal,
-          }
-        )
-    }
+      let data: any
+      if (props.file.name) {
+        data = {
+          folder_path: props.folder_data.folder_path,
+          filename: props.file.name,
+          tags: newVal,
+        }
+      }
+      if (props.file.id) {
+        data = {
+          id: props.file.id,
+          tags: newVal,
+        }
+      }
+      await apiClient.post(
+        `/storage/fileinfo/${props.folder_data.server}/${props.folder_data.storage}/`,
+        data
+      );
+    };
     const tagSelect = (value: any) => {
       console.log(value);
-    }
+    };
     const handleNoteSave = async (newVal: string) => {
-      await apiClient.post(`/storage/fileinfo/${
-          props.folder_data.server
-        }/${
-          props.folder_data.storage}/`,
-          {
-            folder_path: props.folder_data.folder_path,
-            filename:props.file.name,
-            note: newVal,
-          }
-        )
-        note = newVal
-    }
+      let data: any
+      if (props.file.name) {
+        data = {
+          folder_path: props.folder_data.folder_path,
+          filename: props.file.name,
+          note: newVal,
+        }
+      }
+      if (props.file.id) {
+        data = {
+          id: props.file.id,
+          note: newVal,
+        }
+      }
+      await apiClient.post(
+        `/storage/fileinfo/${props.folder_data.server}/${props.folder_data.storage}/`,
+        data
+      );
+      note = newVal;
+    };
     const onChangePublic = async (event: any) => {
-      await apiClient.post(`/storage/fileinfo/${
-          props.folder_data.server
-        }/${
-          props.folder_data.storage}/`,
-          {
-            folder_path: props.folder_data.folder_path,
-            filename:props.file.name,
-            is_public: event.target.checked,
-          }
-        )
-      console.log(`changePublic: ${event.target.checked}`)
-
-    }
-    return { fetchImage, formatSize, imageUrl, fileUrl, file_created, tags_value, handleTagChange, tagSelect, note, is_public, handleNoteSave, onChangePublic, isImage, isVideo };
+      let data: any
+      if (props.file.name) {
+        data = {
+          folder_path: props.folder_data.folder_path,
+          filename: props.file.name,
+          is_public: event.target.checked,
+        }
+      }
+      if (props.file.id) {
+        data = {
+          id: props.file.id,
+          is_public: event.target.checked,
+        }
+      }
+      await apiClient.post(
+        `/storage/fileinfo/${props.folder_data.server}/${props.folder_data.storage}/`,
+        data,
+      );
+      console.log(`changePublic: ${event.target.checked}`);
+    };
+    return {
+      fetchImage,
+      formatSize,
+      imageUrl,
+      fileUrl,
+      file_created,
+      tags_value,
+      handleTagChange,
+      tagSelect,
+      note,
+      is_public,
+      handleNoteSave,
+      onChangePublic,
+      isImage,
+      isVideo,
+    };
   },
 });
 </script>
@@ -169,8 +249,8 @@ export default defineComponent({
 }
 
 .file-card__title {
-   text-align: center;
-   color: #333;
+  text-align: center;
+  color: #333;
 }
 
 .file-card__details {
@@ -187,7 +267,6 @@ export default defineComponent({
 .file-card__info--created {
   font-size: 0.8rem;
 }
-
 
 .file-card__img {
   /* стили для изображения */

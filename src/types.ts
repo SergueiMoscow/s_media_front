@@ -47,11 +47,12 @@ export interface ParametersFolderView {
 
 export interface FileObject {
   // for file direct (without catalog)
-  name: string;
+  name: string | null | undefined;
+  id: string | null | undefined;
   type: string;
   full_path: string;
   size: number;
-  created: string;
+  created_at: string;
   group: string;
   image_url: string;
   selected: boolean; // выделение для групповых операций
@@ -77,4 +78,31 @@ export interface CatalogObject {
   created_at: string;
   // group: string;
   // is_public: boolean;
+}
+
+export interface CatlogRequest {
+  page: number,
+  per_page: number,
+  date_from: string,
+  date_to: string,
+  search: string,
+  tags: Array<string>,
+  public: boolean,
+  sort: string,
+  sort_direction: string,
+
+}
+
+export function defaultCatalogRequest(): CatlogRequest {
+  return {
+    page: 1,
+    per_page: 10,
+    date_from: '',
+    date_to: '',
+    search: '',
+    tags: [],
+    public: false,
+    sort: '',
+    sort_direction: ''
+  };
 }

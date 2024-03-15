@@ -1,3 +1,6 @@
+import apiClient from "./apiClient";
+import { FileObject } from "./types";
+
 export function formatDate(isoString: string): string {
     const date = new Date(isoString);
     const day = zeroPad(date.getDate());
@@ -10,4 +13,29 @@ export function formatDate(isoString: string): string {
 
 function zeroPad(number: number): string {
     return number < 10 ? `0${number}` : `${number}`;
+}
+
+export async function getAvailableTags(server_id: string, files?: FileObject[]){
+    const response_tags = await apiClient.get(
+        `/catalog/tags/${server_id}/`
+    );
+    const result = response_tags?.data.results;
+
+
+    if(files){ // only process if files are provided
+        // Extract all tags from files and remove duplicates
+        let fileTags = files.reduce((tags: string[], file: FileObject) => {
+            return [...tags, ...file.tags];
+        }, []);
+
+        fileTags = [...new Set(fileTags)]; // remove duplicates
+        // Add unique tags from files to the result
+        fileTags.forEach(tag => {
+          if(!result.includes(tag)) {
+            result.push(tag);
+          }
+        });
+    }
+
+    return result;
 }

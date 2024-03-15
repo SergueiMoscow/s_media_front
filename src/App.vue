@@ -9,42 +9,44 @@
     <v-navigation-drawer app v-model="drawer_visible">
       <v-list nav>
         <template v-for="(item, i) in filteredNavigationItems" :key="i">
-          <v-list-item v-if="!item?.items" base-color="primary" :to="item.path">
+          <v-list-item
+            v-if="item.value != 'catalogs'"
+            base-color="primary"
+            :to="item.path"
+          >
             <template v-slot:prepend>
               <v-icon :icon="item.icon"></v-icon>
             </template>
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item>
-          <template v-if="item.items">
-            <v-list-group value="Admin">
-            <template v-slot:activator="{ props }">
+          <template v-if="item.value == 'catalogs'">
+            <v-list-group value="catalogs">
+              <template v-slot:activator="{ props }">
+                <v-list-item
+                  v-bind="props"
+                  :title="item.title"
+                  base-color="primary"
+                >
+                  <template v-slot:prepend>
+                    <v-icon :icon="item.icon"></v-icon>
+                  </template>
+                </v-list-item>
+              </template>
+
               <v-list-item
-                v-bind="props"
-                :title="item.title"
+                v-for="(storage, i) in storages"
+                :key="i"
+                prepend-icon="mdi-folder"
+                :title="storage.name"
+                :value="storage.id"
                 base-color="primary"
-              >
-              <template v-slot:prepend>
-              <v-icon :icon="item.icon"></v-icon>
-            </template>
-
-            </v-list-item>
-            </template>
-  
-            <v-list-item
-              v-for="(storage, i) in item.items"
-              :key="i"
-              prepend-icon="mdi-folder"
-              :title="storage.name"
-              :value="storage.id"
-              base-color="primary"
-            ></v-list-item>
-          </v-list-group>
-
+                :to="{ name: 'CatalogContent', params: { server_id: storage.server_id, storage_id: storage.id} }"
+              ></v-list-item>
+            </v-list-group>
           </template>
-
         </template>
 
-        <v-list-item
+        <!-- <v-list-item
           v-for="(item, i) in filteredNavigationItems"
           :key="i"
           :value="item"
@@ -55,7 +57,7 @@
             <v-icon :icon="item.icon"></v-icon>
           </template>
           <v-list-item-title>{{ item.title }}</v-list-item-title>
-        </v-list-item>
+        </v-list-item> -->
       </v-list>
     </v-navigation-drawer>
     <v-main>
@@ -75,6 +77,7 @@ const drawer_visible = ref(false);
 const router = useRouter();
 const authTrigger = ref(false); // Используется для триггеринга изменения авторизации
 const emitter = mitt(); // Создаем новый экземпляр mitt внутри этого компонента
+const storages = ref<Storage[]>([]);
 
 let navigation_items = [
   {
@@ -104,6 +107,7 @@ let navigation_items = [
     icon: "mdi-server",
     path: "/storages",
     requiresAuth: true,
+    items: undefined,
   },
   {
     title: "О системе",
@@ -112,14 +116,18 @@ let navigation_items = [
     path: "/about",
     requiresAuth: false,
   },
-]
+];
 
 async function fetchStorages() {
   if (isUserLoggedIn.value) {
-    const storagesList = await getStoragesList(); // Используйте тип StorageItem[] для получаемого массива
-    const catalogsItemIndex = navigation_items.findIndex(item => item.value === "catalogs");
+    const storagesList = await getStoragesList();
+    const catalogsItemIndex = navigation_items.findIndex(
+      (item) => item.value === "catalogs"
+    );
     if (catalogsItemIndex !== -1) {
-      navigation_items[catalogsItemIndex].items = storagesList;
+      storages.value = storagesList;
+      console.log(`App.vue storages:`)
+      console.log(storages.value);
     }
   }
 }
@@ -127,7 +135,6 @@ async function fetchStorages() {
 onMounted(() => {
   emitter.on("auth-changed", triggerAuthUpdate);
   fetchStorages();
-
 });
 
 onUnmounted(() => {
@@ -168,5 +175,4 @@ async function getStoragesList() {
   const response = await apiClient.get(`/storages/`);
   return response.data.results;
 }
-
 </script>

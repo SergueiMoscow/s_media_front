@@ -34,6 +34,14 @@ const routes = [
     props: true,
     meta: { key: (route: RouteLocationNormalizedLoaded) => route.fullPath },
   },
+  {
+    name: 'CatalogContent',
+    path: '/catalog_content/:server_id?/:storage_id?/',
+    component: () => import('@/views/CatalogContent.vue'),
+    props: true,
+    meta: { key: (route: RouteLocationNormalizedLoaded) => route.fullPath },
+  },
+
 ]
 
 const router = createRouter({

@@ -14,10 +14,10 @@
       <FolderCardComponent :folder="folder" />
     </div>
   </div>
-  <div class="folder-container">
+  <div class="folder-container" v-if="folder_data">
     <FileCardComponent
       v-for="file in files"
-      :key="file.name"
+      :key="`${file.name ? file.name : ''}${file.id ? file.id : ''}`"
       :file="file"
       :folder_data="folder_data"
       :all_tags="available_tags"
@@ -43,6 +43,7 @@ import { useRoute } from "vue-router";
 import { loadCollage, processFolder } from "@/views/useFolderContent";
 import { navigateToFolder } from "./useNavigation";
 import Pagination from "@/components/Pagination.vue"
+import { getAvailableTags } from "@/common";
 
 export default defineComponent({
   name: "FolderContent",
@@ -98,15 +99,7 @@ export default defineComponent({
           folders.value = await Promise.all(folderPromises);
         }
         // tags
-
-        if (params?.server) {
-          const response_tags = await apiClient.get(
-            `/catalog/tags/${params?.server}/`
-          );
-          available_tags.value = response_tags?.data.results;
-        } else {
-          available_tags.value = [];
-        }
+        available_tags.value = await getAvailableTags(`${params?.server}`)
         // pagination
         if (response.data.pagination) {
           currentPage.value = response.data.pagination.page;
