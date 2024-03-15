@@ -1,5 +1,8 @@
 <template>
-  <div>{{ storage_id }}</div>
+  <div>
+  <FilterComponent></FilterComponent>
+  </div>
+
   <div class="folder-container" v-if="folder_data">
     <FileCardComponent
       v-for="file in files"
@@ -10,15 +13,16 @@
     />
   </div>
 
-</template>
+  </template>
 
 <script setup lang="ts">
 import { ref, Ref, onMounted, watchEffect } from "vue";
 import FileCardComponent from "@/components/FileCardComponent.vue";
+import FilterComponent from "@/components/FilterComponent.vue";
 import {defineEmits} from 'vue';
 
 import apiClient from "@/apiClient";
-import { CatlogRequest, FileObject, ParametersFolderView, defaultCatalogRequest } from "@/types";
+import { CatalogRequest, FileObject, ParametersFolderView, defaultCatalogRequest } from "@/types";
 import { getAvailableTags } from "@/common";
 const emits = defineEmits(['authChanged']);
 
@@ -26,7 +30,7 @@ const props = defineProps({
   server_id: { type: String, default: ''},
   storage_id: { type: String, default: ''},
 });
-const filterSettings: Ref<CatlogRequest> = ref(defaultCatalogRequest());
+const filterSettings: Ref<CatalogRequest> = ref(defaultCatalogRequest());
 const files = ref<FileObject[]>([]);
 const folder_data = ref<ParametersFolderView>();
 const available_tags = ref()

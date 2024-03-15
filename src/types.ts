@@ -80,7 +80,7 @@ export interface CatalogObject {
   // is_public: boolean;
 }
 
-export interface CatlogRequest {
+export interface CatalogRequest {
   page: number,
   per_page: number,
   date_from: string,
@@ -90,10 +90,9 @@ export interface CatlogRequest {
   public: boolean,
   sort: string,
   sort_direction: string,
-
 }
 
-export function defaultCatalogRequest(): CatlogRequest {
+export function defaultCatalogRequest(): CatalogRequest {
   return {
     page: 1,
     per_page: 10,
