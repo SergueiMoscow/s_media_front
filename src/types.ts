@@ -80,30 +80,46 @@ export interface CatalogObject {
   // is_public: boolean;
 }
 
-export interface CatalogRequest {
+export interface RequestPrams {
   page: number,
   per_page: number,
+  date_filter: boolean,
   date_from: string,
   date_to: string,
   search: string,
   tags: Array<string>,
-  public: boolean,
+  public: boolean | null,
   sort: string,
   sort_direction: string,
 }
 
-export function defaultCatalogRequest(): CatalogRequest {
+export interface PreparedRequestPrams {
+  page: number,
+  per_page: number,
+  date_filter: boolean,
+  date_from: string,
+  date_to: string,
+  search: string,
+  tags: string,
+  public: boolean | null,
+  sort: string,
+  sort_direction: string,
+}
+
+
+export function defaultCatalogRequest(): RequestPrams {
   const today = new Date();
   const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
   return {
     page: 1,
     per_page: 10,
-    date_from: '1900-01-01',
+    date_filter: false,
+    date_from: '',
     date_to: formattedDate,
     search: '',
     tags: [],
-    public: false,
+    public: null,
     sort: '',
     sort_direction: ''
   };

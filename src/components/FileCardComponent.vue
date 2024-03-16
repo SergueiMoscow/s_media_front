@@ -88,7 +88,7 @@ export default defineComponent({
     },
     all_tags: Array<string>,
   },
-  setup(props) {
+  setup(props, { emit }) {
     const imageUrl = ref("");
     const fileUrl = ref("");
     const isImage = ["png", "jpg", "jpeg", "bmp", "svg", "webp"].includes(
@@ -199,7 +199,7 @@ export default defineComponent({
     };
     const tagClick = (event: any) => {
       const result = event.target.textContent || event.target.innerText;
-      console.log('tagclick result: ', result)
+      emit('tag-clicked', result);
     }
     return {
       fetchImage,

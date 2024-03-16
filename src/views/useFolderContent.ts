@@ -1,5 +1,5 @@
 import apiClient from "@/apiClient";
-import { Folder } from "@/types";
+import { RequestPrams, Folder, PreparedRequestPrams } from "@/types";
 
 export const loadCollage = async (
     server_id: String,
@@ -75,3 +75,41 @@ export const processFolder = async (folder: Folder, params: any) => {
         collage_url: collageUrl,
     };
 }
+
+
+export const prepareRequestParams = (input: RequestPrams): Partial<PreparedRequestPrams> => {
+    const output: Partial<PreparedRequestPrams> = {
+      ...input, // start with all properties
+      tags: input.tags.join(', '), // convert tags array to string
+    };
+  
+    if (!input.date_filter) {
+      delete output.date_from;
+      delete output.date_to;
+    } else {
+      // проверить даты и установить значение по умолчанию при необходимости
+      const dateRegEx = /\d{4}-\d{2}-\d{2}/;
+      if (!dateRegEx.test(input.date_from)) {
+        output.date_from = '1900-01-01';
+      }
+      if (!dateRegEx.test(input.date_to)) {
+        const today = new Date();
+        const formattedDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+        output.date_to = formattedDate;
+      }
+    }
+  
+    if (input.public === null) {
+      delete output.public;
+    }
+  
+    if (!input.sort) {
+      delete output.sort;
+    }
+  
+    if (!input.sort_direction) {
+      delete output.sort_direction;
+    }
+  
+    return output;
+  }

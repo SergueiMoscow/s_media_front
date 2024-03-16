@@ -2,6 +2,7 @@
   <div class="search-container">
     <div class="search-item">
       <v-text-field
+        v-model="searchString"
         :loading="loading"
         append-inner-icon="mdi-magnify"
         append-icon="mdi-menu"
@@ -48,13 +49,13 @@
             </v-list-item>
             <v-list-item>
               <v-switch
-                v-model="filterByDate"
+                v-model="searchParams.date_filter"
                 color="primary"
                 label="Фильтр по дате"
                 hide-details
               ></v-switch>
             </v-list-item>
-            <v-list-item v-if="filterByDate">
+            <v-list-item v-if="searchParams.date_filter">
               Дата от
               <input
                 type="date"
@@ -62,7 +63,7 @@
                 id="date_from"
               />
             </v-list-item>
-            <v-list-item v-if="filterByDate">
+            <v-list-item v-if="searchParams.date_filter">
               Дата до
               <input type="date" v-model="searchParams.date_to" id="date_to" />
             </v-list-item>
@@ -105,7 +106,7 @@
 import { ref, PropType, watchEffect, defineComponent } from "vue";
 import Multiselect from "@vueform/multiselect";
 // import DatePicker from '@/components/DatePicker.vue'
-import { CatalogRequest } from "@/types";
+import { RequestPrams } from "@/types";
 import {
   itemsOrderField,
   itemsOrderDirection,
@@ -118,14 +119,14 @@ export default defineComponent({
   },
 
   props: {
-    filter: { type: Object as PropType<CatalogRequest>, required: true },
+    filter: { type: Object as PropType<RequestPrams>, required: true },
     all_tags: Array<string>,
   },
 
   setup(props, { emit }) {
    console.log("FilterComponent tags: ", props.all_tags)
   //  const emit = defineEmits(['update:props'])
-   let searchParams = { ...props.filter }
+   let searchParams = ref({ ...props.filter })
 
     let loading = ref(false);
     let menu = ref(false);
@@ -133,24 +134,27 @@ export default defineComponent({
     let selectPublished = "all";
     let orderField = "created_at";
     let orderDirection = "desc";
+    let searchString = ref('')
     const activateMenu = () => {
       menu.value = true;
     }
-    const handleChange = (obj: any) => {
-      console.log("HandleChange", obj);
+    const handleChange = () => {
+      console.log("HandleChange searchParams", searchParams.value);
       menu.value = false;
-      emit("update:props");
+      emit("update:props", searchParams.value);
     }
 
     const onSearchClick = () => {
-      handleChange({});
-      emit("update:props", searchParams);
+      searchParams.value.search = searchString.value
+      console.log('FilterComponent onSearchClick searchParams=', searchParams.value)
+      handleChange();
     }
-    watchEffect(() => {
-      console.log("Tags updated: ", props.all_tags);
-    })
+    // watchEffect(() => {
+    //   emit("update:props", searchParams.value);
+    // })
     const handleTagChange = async (newVal: any) => {
-      searchParams.tags = newVal;
+      searchParams.value.tags = newVal;
+      emit("update:props", searchParams.value);
     }
     const tagSelect = (value: any) => {
       console.log(`FilterComponent TagSelect ${value}`);
@@ -171,6 +175,7 @@ export default defineComponent({
       itemsOrderField,
       orderDirection,
       itemsOrderDirection,
+      searchString,
      }
   },
 });
