@@ -16,69 +16,76 @@
 
     <div class="search-item">
       <v-menu v-model="menu" :close-on-content-click="false" location="end">
-        <!-- <template v-slot:activator="{ props }">
-          <v-btn color="white" v-bind="props">
-            <v-icon dark>mdi-menu</v-icon>
-          </v-btn>
-          <v-text-field
-            :loading="loading"
-            append-inner-icon="mdi-magnify"
-            append-icon="mdi-menu"
-            density="compact"
-            label="Search"
-            hide-details
-            single-line
-            @click:append-inner="onSearchClick"
-            @click:append="activateMenu"
-          ></v-text-field>
-        </template> -->
-
         <v-card min-width="300">
           <v-list>
             <v-list-item
-              prepend-avatar="https://cdn.vuetifyjs.com/images/john.jpg"
-              subtitle="Founder of Vuetify"
-              title="John Leider"
-            >
-              <template v-slot:append>
-                <v-btn
-                  :class="fav ? 'text-red' : ''"
-                  icon="mdi-heart"
-                  variant="text"
-                  @click="fav = !fav"
-                ></v-btn>
-              </template>
+              base-color="primary"
+              title="Фильтр"
+              prepend-icon="mdi-filter"
+            ></v-list-item>
+            <v-list-item>
+              <Multiselect
+                mode="tags"
+                placeholder="Поиск по тегам"
+                :searchable="true"
+                :createTag="true"
+                :caret="false"
+              />
             </v-list-item>
           </v-list>
-
-          <v-divider></v-divider>
-
           <v-list>
             <v-list-item>
-              <v-switch
-                v-model="message"
-                color="purple"
-                label="Enable messages"
-                hide-details
-              ></v-switch>
+              <v-select
+                v-model="selectPublished"
+                :items="itemsPublished"
+                density="compact"
+                label="Фильтр по публикации"
+              ></v-select>
+            </v-list-item>
+            <v-list-item>
+            <v-switch
+              v-model="filterByDate"
+              color="primary"
+              label="Фильтр по дате"
+              hide-details
+            ></v-switch>
+          </v-list-item>
+            <v-list-item v-if="filterByDate">
+              Дата от
+              <input type="date" id="start" name="search-end" value="2023-05-03">
+            </v-list-item>
+            <v-list-item v-if="filterByDate">
+              Дата до
+              <input type="date" id="start" name="search-end" value="2023-05-03">
+            </v-list-item>
+            <v-divider></v-divider>
+            <v-list-item
+              title="Сортировка"
+              base-color="primary"
+              prepend-icon="mdi-sort"
+            ></v-list-item>
+            <v-list-item>
+              <v-select
+                v-model="orderField"
+                :items="itemsOrderField"
+                density="compact"
+              ></v-select>
+            </v-list-item>
+            <v-list-item>
+              <v-select
+                v-model="orderDirection"
+                :items="itemsOrderDirection"
+                density="compact"
+              ></v-select>
             </v-list-item>
 
-            <v-list-item>
-              <v-switch
-                v-model="hints"
-                color="purple"
-                label="Enable hints"
-                hide-details
-              ></v-switch>
-            </v-list-item>
           </v-list>
 
           <v-card-actions>
-            <v-spacer></v-spacer>
 
-            <v-btn variant="text" @click="menu = false"> Cancel </v-btn>
+            <v-btn variant="text" @click="menu = false"> Отмена </v-btn>
             <v-btn color="primary" variant="text" @click="menu = false">
-              Save
+              Поиск
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -87,19 +94,56 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 // https://vuetifyjs.com/en/components/menus/#activator-and-tooltip
 import { ref } from "vue";
-
-let fav = true;
+import Multiselect from "@vueform/multiselect";
+let loading = ref(false)
 let menu = ref(false);
-let message = false;
-let hints = true;
-let on = false;
+let filterByDate = ref(false)
+let selectPublished = "Все";
+let orderField = 'created_at'
+let orderDirection = 'desc'
+let itemsOrderField = [
+  {
+    title: 'Дата',
+    value: 'created_at',
+  },
+  {
+    title: 'Описание',
+    value: 'note',
+  }
+]
+let itemsOrderDirection = [
+  {
+    title: 'По возрастанию',
+    value: 'asc',
+  },
+  {
+    title: 'По убыванию',
+    value: 'desc',
+  },
+]
+let itemsPublished = [
+  {
+    title: 'Все',
+    value: 'all',
+  },
+  {
+    title: 'Опубликованные',
+    value: 'public',
+  },
+  {
+    title: 'Неопубликованные',
+    value: 'private',
+  },
+]
 
 const activateMenu = () => {
   menu.value = true;
 };
+const onSearchClick = () => {}
+
 </script>
 
 <style scoped>
