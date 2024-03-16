@@ -13,6 +13,19 @@
         @click:append="activateMenu"
       ></v-text-field>
     </div>
+    <div class="search-item">
+    <Multiselect
+      v-model="searchParams.tags"
+      :options="all_tags"
+      mode="tags"
+      placeholder="Поиск по тегам"
+      :searchable="true"
+      :createTag="true"
+      :caret="false"
+      @update:modelValue="handleTagChange"
+      @select="tagSelect"
+    />
+  </div>
 
     <div class="search-item">
       <v-menu v-model="menu" :close-on-content-click="false" location="end">
@@ -23,15 +36,6 @@
               title="Фильтр"
               prepend-icon="mdi-filter"
             ></v-list-item>
-            <v-list-item>
-              <Multiselect
-                mode="tags"
-                placeholder="Поиск по тегам"
-                :searchable="true"
-                :createTag="true"
-                :caret="false"
-              />
-            </v-list-item>
           </v-list>
           <v-list>
             <v-list-item>
@@ -43,20 +47,24 @@
               ></v-select>
             </v-list-item>
             <v-list-item>
-            <v-switch
-              v-model="filterByDate"
-              color="primary"
-              label="Фильтр по дате"
-              hide-details
-            ></v-switch>
-          </v-list-item>
+              <v-switch
+                v-model="filterByDate"
+                color="primary"
+                label="Фильтр по дате"
+                hide-details
+              ></v-switch>
+            </v-list-item>
             <v-list-item v-if="filterByDate">
               Дата от
-              <input type="date" id="start" name="search-end" value="2023-05-03">
+              <input
+                type="date"
+                v-model="searchParams.date_from"
+                id="date_from"
+              />
             </v-list-item>
             <v-list-item v-if="filterByDate">
               Дата до
-              <input type="date" id="start" name="search-end" value="2023-05-03">
+              <input type="date" v-model="searchParams.date_to" id="date_to" />
             </v-list-item>
             <v-divider></v-divider>
             <v-list-item
@@ -78,13 +86,11 @@
                 density="compact"
               ></v-select>
             </v-list-item>
-
           </v-list>
 
           <v-card-actions>
-
             <v-btn variant="text" @click="menu = false"> Отмена </v-btn>
-            <v-btn color="primary" variant="text" @click="menu = false">
+            <v-btn color="primary" variant="text" @click="onSearchClick">
               Поиск
             </v-btn>
           </v-card-actions>
@@ -94,57 +100,82 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
 // https://vuetifyjs.com/en/components/menus/#activator-and-tooltip
-import { ref } from "vue";
+import { ref, PropType, watchEffect, defineComponent } from "vue";
 import Multiselect from "@vueform/multiselect";
-let loading = ref(false)
-let menu = ref(false);
-let filterByDate = ref(false)
-let selectPublished = "Все";
-let orderField = 'created_at'
-let orderDirection = 'desc'
-let itemsOrderField = [
-  {
-    title: 'Дата',
-    value: 'created_at',
+// import DatePicker from '@/components/DatePicker.vue'
+import { CatalogRequest } from "@/types";
+import {
+  itemsOrderField,
+  itemsOrderDirection,
+  itemsPublished,
+} from "./useFilterComponent";
+export default defineComponent({
+  name: "FilterComponent",
+  components: {
+    Multiselect,
   },
-  {
-    title: 'Описание',
-    value: 'note',
-  }
-]
-let itemsOrderDirection = [
-  {
-    title: 'По возрастанию',
-    value: 'asc',
-  },
-  {
-    title: 'По убыванию',
-    value: 'desc',
-  },
-]
-let itemsPublished = [
-  {
-    title: 'Все',
-    value: 'all',
-  },
-  {
-    title: 'Опубликованные',
-    value: 'public',
-  },
-  {
-    title: 'Неопубликованные',
-    value: 'private',
-  },
-]
 
-const activateMenu = () => {
-  menu.value = true;
-};
-const onSearchClick = () => {}
+  props: {
+    filter: { type: Object as PropType<CatalogRequest>, required: true },
+    all_tags: Array<string>,
+  },
 
+  setup(props, { emit }) {
+   console.log("FilterComponent tags: ", props.all_tags)
+  //  const emit = defineEmits(['update:props'])
+   let searchParams = { ...props.filter }
+
+    let loading = ref(false);
+    let menu = ref(false);
+    let filterByDate = ref(false);
+    let selectPublished = "all";
+    let orderField = "created_at";
+    let orderDirection = "desc";
+    const activateMenu = () => {
+      menu.value = true;
+    }
+    const handleChange = (obj: any) => {
+      console.log("HandleChange", obj);
+      menu.value = false;
+      emit("update:props");
+    }
+
+    const onSearchClick = () => {
+      handleChange({});
+      emit("update:props", searchParams);
+    }
+    watchEffect(() => {
+      console.log("Tags updated: ", props.all_tags);
+    })
+    const handleTagChange = async (newVal: any) => {
+      searchParams.tags = newVal;
+    }
+    const tagSelect = (value: any) => {
+      console.log(`FilterComponent TagSelect ${value}`);
+      console.log('FilterComponent all_tags: ', props.all_tags)
+    }
+    return {
+      loading,
+      onSearchClick,
+      activateMenu,
+      menu,
+      searchParams,
+      handleTagChange,
+      tagSelect,
+      selectPublished,
+      itemsPublished,
+      filterByDate,
+      orderField,
+      itemsOrderField,
+      orderDirection,
+      itemsOrderDirection,
+     }
+  },
+});
 </script>
+<style src="@vueform/multiselect/themes/default.css"></style>
 
 <style scoped>
 .search-container {

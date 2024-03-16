@@ -39,6 +39,7 @@
           :caret="false"
           @update:modelValue="handleTagChange"
           @select="tagSelect"
+          @click="tagClick"
         />
       </div>
       <div>
@@ -120,22 +121,8 @@ export default defineComponent({
       return url;
     };
 
-    // old url generate, changed by function generateUrl
-    // 
-    // imageUrl.value = `${import.meta.env.VITE_BACKEND_URL}/preview/${
-    //   props.folder_data?.server
-    // }/${props.folder_data?.storage}/?folder=${encodeURIComponent(
-    //   props.folder_data?.folder_path ? props.folder_data.folder_path : ""
-    // )}&filename=${props.file.name}`;
-    // fileUrl.value = `${import.meta.env.VITE_BACKEND_URL}/file/${
-    //   props.folder_data?.server
-    // }/${props.folder_data?.storage}/?folder=${encodeURIComponent(
-    //   props.folder_data?.folder_path ? props.folder_data.folder_path : ""
-    // )}&filename=${props.file.name}`;
-
     imageUrl.value = generateUrl('preview', props.folder_data, props.file);
     fileUrl.value = generateUrl('file', props.folder_data, props.file);
-
 
     const formatSize = (size: number) => {
       return (size / 1024).toFixed(2) + " KB";
@@ -210,6 +197,10 @@ export default defineComponent({
       );
       console.log(`changePublic: ${event.target.checked}`);
     };
+    const tagClick = (event: any) => {
+      const result = event.target.textContent || event.target.innerText;
+      console.log('tagclick result: ', result)
+    }
     return {
       fetchImage,
       formatSize,
@@ -225,6 +216,7 @@ export default defineComponent({
       onChangePublic,
       isImage,
       isVideo,
+      tagClick,
     };
   },
 });

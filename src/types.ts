@@ -93,11 +93,14 @@ export interface CatalogRequest {
 }
 
 export function defaultCatalogRequest(): CatalogRequest {
+  const today = new Date();
+  const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
   return {
     page: 1,
     per_page: 10,
-    date_from: '',
-    date_to: '',
+    date_from: '1900-01-01',
+    date_to: formattedDate,
     search: '',
     tags: [],
     public: false,

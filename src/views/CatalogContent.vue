@@ -1,6 +1,9 @@
 <template>
   <div>
-  <FilterComponent></FilterComponent>
+  <FilterComponent
+    :filter="filterSettings"
+    :all_tags="available_tags"
+  ></FilterComponent>
   </div>
 
   <div class="folder-container" v-if="folder_data">
@@ -47,6 +50,7 @@ const fetchData = async () => {
   console.log("response:", response);
   // tags
   available_tags.value = await getAvailableTags(props.server_id, files.value)
+  console.log('CatalogContent tags updated: ', available_tags)
   return
 };
 onMounted(async () => {
