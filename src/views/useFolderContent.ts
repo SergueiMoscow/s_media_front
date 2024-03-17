@@ -80,7 +80,7 @@ export const processFolder = async (folder: Folder, params: any) => {
 export const prepareRequestParams = (input: RequestPrams): Partial<PreparedRequestPrams> => {
     const output: Partial<PreparedRequestPrams> = {
       ...input, // start with all properties
-      tags: input.tags.join(', '), // convert tags array to string
+      tags: input.tags.join(','), // convert tags array to string
     };
   
     if (!input.date_filter) {

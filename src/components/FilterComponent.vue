@@ -103,7 +103,7 @@
 
 <script lang="ts">
 // https://vuetifyjs.com/en/components/menus/#activator-and-tooltip
-import { ref, PropType, watchEffect, defineComponent } from "vue";
+import { ref, PropType, defineComponent } from "vue";
 import Multiselect from "@vueform/multiselect";
 // import DatePicker from '@/components/DatePicker.vue'
 import { RequestPrams } from "@/types";
@@ -149,13 +149,12 @@ export default defineComponent({
       console.log('FilterComponent onSearchClick searchParams=', searchParams.value)
       handleChange();
     }
-    // watchEffect(() => {
-    //   emit("update:props", searchParams.value);
-    // })
+
     const handleTagChange = async (newVal: any) => {
       searchParams.value.tags = newVal;
       emit("update:props", searchParams.value);
     }
+
     const tagSelect = (value: any) => {
       console.log(`FilterComponent TagSelect ${value}`);
       console.log('FilterComponent all_tags: ', props.all_tags)

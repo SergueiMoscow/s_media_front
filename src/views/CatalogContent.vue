@@ -44,7 +44,7 @@ const fetchData = async (updatedFilter: RequestPrams) => {
   filterSettings.value = updatedFilter;
   const url = `/catalog_content/${props.server_id}/${props.storage_id}/`;
   const preparedRequestParams = prepareRequestParams(filterSettings.value)
-  console.log('CatalogContent filterSettings: ', filterSettings.value)
+  console.log('CatalogContent filterSettings: ', preparedRequestParams)
   const response = await apiClient.get(url, { params: preparedRequestParams });
   files.value = response.data.files
   folder_data.value = {
