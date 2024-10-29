@@ -8,6 +8,7 @@ const apiClient = axios.create({
 
 // Добавляем интерцептор запросов для инъекции токена авторизации
 apiClient.interceptors.request.use(config => {
+  console.log('Request Config:', config);
   const token = window.localStorage.getItem('access_token');
   if (token) {
     config.headers['Authorization'] = `Bearer ${token}`;

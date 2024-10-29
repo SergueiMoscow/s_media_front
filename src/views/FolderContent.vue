@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <div>Сервер:</div>
+    <!--div>Сервер:</div-->
     <div>Хранилище: {{ storage_name }}</div>
     <!--div>Папка {{ folder_name }}</div -->
     <FolderPathComponent
