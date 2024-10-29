@@ -15,7 +15,7 @@
     "mitt": "^3.0.1",
     "moment": "^2.30.1",
     "roboto-fontface": "*",
-    "video.js": "^8.10.0",
+    "video.js": ">=7.0.0",
     "vue": "^3.2.38",
     "vue-axios": "^3.5.2",
     "vue-router": "^4.0.0",

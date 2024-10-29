@@ -1,5 +1,8 @@
 # default
 
+`sudo apt install npm`
+
+
 ## Project setup
 
 ```
@@ -42,3 +45,7 @@ pnpm build
 ### Customize configuration
 
 See [Configuration Reference](https://vitejs.dev/config/).
+
+### With docker
+docker build -t s_media_front .
+docker run -p 3000:3000 s_media_front

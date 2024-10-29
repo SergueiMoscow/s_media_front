@@ -16,10 +16,13 @@ function zeroPad(number: number): string {
 }
 
 export async function getAvailableTags(server_id: string, files?: FileObject[]){
+    if (!server_id) {
+        return []
+    }
     const response_tags = await apiClient.get(
-        `/catalog/tags/${server_id}/`
-    );
-    const result = response_tags?.data.results;
+            `/catalog/tags/${server_id}/`
+        );
+        const result = response_tags?.data.results;
 
 
     if(files){ // only process if files are provided
